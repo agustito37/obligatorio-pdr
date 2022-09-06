@@ -1,57 +1,63 @@
-﻿public class View {
+﻿public class Client {
+    private static Controller? controller;
+
     private static void connect() {
-        // get connection data here
-        Controller.connect();
+        controller!.connect();
     }
 
     private static void disconnect()
     {
-        Controller.disconnect();
+        controller!.disconnect();
     }
 
     private static void createUser()
     {
         // get user data here
-        Controller.createUser();
+        controller!.createUser();
     }
 
     private static void createProfile()
     {
         // get profile data here
-        Controller.createProfile();
+        controller!.createProfile();
     }
 
     private static void addPhoto()
     {
         // get photo url
-        Controller.addPhoto();
+        controller!.addPhoto();
     }
 
     private static void getProfiles()
     {
-        Controller.getProfiles();
+        controller!.getProfiles();
         // log profiles here
     }
 
     private static void getProfile()
     {
-        Controller.getProfile();
+        controller!.getProfile();
         // log profile here
     }
 
     private static void sendMessage()
     {
-        // get message data here
-        Controller.sendMessage();
+        Console.WriteLine("Ingrese el mensaje:");
+        string message = Console.ReadLine() ?? "";
+        controller!.sendMessage(message);
     }
 
     private static void getMessages()
     {
-        Controller.getMessages();
+        controller!.getMessages();
         // log messages here
     }
 
     public static void Main() {
+        SocketService socketService = new SocketService("127.0.0.1", 5000);
+        socketService.Start();
+        controller = new Controller(socketService);
+        
         Menu mainMenu = new()
         {
             Title = "Menu principal",

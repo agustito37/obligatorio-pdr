@@ -35,8 +35,8 @@
             }
             catch (Exception)
             {
-                Console.WriteLine("Option inválida: {0}", input);
-                Console.WriteLine("Por favor ingrese de nuevo", input);
+                Console.WriteLine("Opción inválida: {0}", input);
+                Console.WriteLine("Ingrese la opción nuevamente:", input);
                 continue;
             }
 
