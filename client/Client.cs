@@ -1,47 +1,47 @@
 ﻿public class Client {
     private static Controller? controller;
 
-    private static void connect() {
-        controller!.connect();
+    private static void Connect() {
+        controller!.Connect();
     }
 
-    private static void disconnect() {
-        controller!.disconnect();
+    private static void Disconnect() {
+        controller!.Disconnect();
     }
 
-    private static void createUser() {
+    private static void CreateUser() {
         // get user data here
-        controller!.createUser();
+        controller!.CreateUser();
     }
 
-    private static void createProfile() {
+    private static void CreateProfile() {
         // get profile data here
-        controller!.createProfile();
+        controller!.CreateProfile();
     }
 
-    private static void addPhoto() {
+    private static void AddPhoto() {
         // get photo url
-        controller!.addPhoto();
+        controller!.AddPhoto();
     }
 
-    private static void getProfiles() {
-        controller!.getProfiles();
+    private static void GetProfiles() {
+        controller!.GetProfiles();
         // log profiles here
     }
 
-    private static void getProfile() {
-        controller!.getProfile();
+    private static void GetProfile() {
+        controller!.GetProfile();
         // log profile here
     }
 
-    private static void sendMessage() {
+    private static void SendMessage() {
         Console.WriteLine("Ingrese el mensaje:");
         string message = Console.ReadLine() ?? "";
-        controller!.sendMessage(message);
+        controller!.SendMessage(message);
     }
 
-    private static void getMessages() {
-        controller!.getMessages();
+    private static void GetMessages() {
+        controller!.GetMessages();
         // log messages here
     }
 
@@ -54,15 +54,15 @@
         {
             Title = "Menu principal",
             Options = new List<Tuple<String, Delegate>> {
-                new Tuple<string, Delegate>("Conectarse a servidor", connect),
-                new Tuple<string, Delegate>("Desconectarse de servidor", disconnect),
-                new Tuple<string, Delegate>("Alta usuario", createUser),
-                new Tuple<string, Delegate>("Alta perfil de trabajo", createProfile),
-                new Tuple<string, Delegate>("Asociar foto de perfil de trabajo", addPhoto),
-                new Tuple<string, Delegate>("Consultar perfiles existentes", getProfiles),
-                new Tuple<string, Delegate>("Consultar un perfil específico", getProfile),
-                new Tuple<string, Delegate>("Enviar mensajes", sendMessage),
-                new Tuple<string, Delegate>("Consultar mensajes", getMessages),
+                new Tuple<string, Delegate>("Conectarse a servidor", Connect),
+                new Tuple<string, Delegate>("Desconectarse de servidor", Disconnect),
+                new Tuple<string, Delegate>("Alta usuario", CreateUser),
+                new Tuple<string, Delegate>("Alta perfil de trabajo", CreateProfile),
+                new Tuple<string, Delegate>("Asociar foto de perfil de trabajo", AddPhoto),
+                new Tuple<string, Delegate>("Consultar perfiles existentes", GetProfiles),
+                new Tuple<string, Delegate>("Consultar un perfil específico", GetProfile),
+                new Tuple<string, Delegate>("Enviar mensajes", SendMessage),
+                new Tuple<string, Delegate>("Consultar mensajes", GetMessages),
             }
         };
         mainMenu.Show();
