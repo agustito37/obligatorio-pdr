@@ -46,10 +46,11 @@
     }
 
     public static void Main() {
+        Console.WriteLine("Iniciando cliente...");
+
         SocketService socketService = new SocketService("127.0.0.1", 5000);
-        socketService.Start();
         controller = new Controller(socketService);
-        
+
         Menu mainMenu = new()
         {
             Title = "Menu principal",

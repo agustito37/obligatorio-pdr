@@ -14,12 +14,13 @@ public class SocketService
     }
 
     public void Start() {
-        Console.WriteLine("Iniciando servidor...");
+        Console.WriteLine("Creando socket...");
 
         Socket socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        IPEndPoint localEndpoint = new IPEndPoint(IPAddress.Parse(this.ip), this.port);
 
+        IPEndPoint localEndpoint = new IPEndPoint(IPAddress.Parse(this.ip), this.port);
         socketServer.Bind(localEndpoint);
+
         socketServer.Listen(1);
 
         while (true)
