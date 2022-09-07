@@ -23,7 +23,12 @@ public class SocketService
     }
 
     public void Connect() {
-        if (!socketClient!.Connected) {
+        if (socketClient == null)
+        {
+            throw new Exception("Server not started");
+        }
+
+        if (!socketClient.Connected) {
             Console.WriteLine("Conectando al Servidor...");
             var remoteEndpoint = new IPEndPoint(IPAddress.Parse(this.remoteIp), this.remotePort);
             this.socketClient!.Connect(remoteEndpoint);
@@ -34,14 +39,37 @@ public class SocketService
     }
 
     public void Disconnect() {
-        Console.WriteLine("Cerrando la conexion...");
-        this.socketClient!.Shutdown(SocketShutdown.Both);
-        this.socketClient.Close();
+        if (socketClient == null)
+        {
+            throw new Exception("Server not started");
+        }
+
+        if (socketClient.Connected)
+        {
+            Console.WriteLine("Cerrando la conexion...");
+            this.socketClient.Shutdown(SocketShutdown.Both);
+            this.socketClient.Close();
+        }
+        else {
+            Console.WriteLine("No hay una conexión establecida");
+        }
     }
 
     public void SendMessage(string message)
     {
-        byte[] data = Encoding.UTF8.GetBytes(message);
-        this.socketClient!.Send(data);
+        if (socketClient == null)
+        {
+            throw new Exception("Server not started");
+        }
+
+        if (socketClient.Connected)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(message);
+            this.socketClient.Send(data);
+        }
+        else
+        {
+            Console.WriteLine("No hay una conexión establecida");
+        }
     }
 }
