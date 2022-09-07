@@ -8,14 +8,12 @@ public class SocketService
     private string ip;
     private int port;
 
-    public SocketService(string ip, int port)
-    {
+    public SocketService(string ip, int port) {
         this.ip = ip;
         this.port = port;
     }
 
-    public void Start()
-    {
+    public void Start() {
         Console.WriteLine("Iniciando servidor...");
 
         Socket socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -32,8 +30,7 @@ public class SocketService
         }
     }
 
-    static void ManageClient(Socket socketCliente)
-    {
+    static void ManageClient(Socket socketCliente) {
         try
         {
             while (socketCliente.Connected)

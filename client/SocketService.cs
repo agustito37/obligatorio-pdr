@@ -14,8 +14,7 @@ public class SocketService
         this.remotePort = remotePort;
     }
 
-    public void Start()
-    {
+    public void Start() {
         Console.WriteLine("Iniciando Cliente...");
         this.socketClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0);
@@ -55,8 +54,7 @@ public class SocketService
         }
     }
 
-    public void SendMessage(string message)
-    {
+    public void SendMessage(string message) {
         if (socketClient == null)
         {
             throw new Exception("Server not started");

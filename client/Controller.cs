@@ -11,43 +11,35 @@ public class Controller
         this.socketService.Connect();
     }
 
-    public void disconnect()
-    {
+    public void disconnect() {
         this.socketService.Disconnect();
     }
 
-    public void createUser()
-    {
+    public void createUser() {
         // request to socket here
     }
 
-    public void createProfile()
-    {
+    public void createProfile() {
         // request to socket here
     }
 
-    public void addPhoto()
-    {
+    public void addPhoto() {
         // request to socket here
     }
 
-    public void getProfiles()
-    {
+    public void getProfiles() {
         // request to socket here
     }
 
-    public void getProfile()
-    {
+    public void getProfile() {
         // request to socket here
     }
 
-    public void sendMessage(string message)
-    {
+    public void sendMessage(string message) {
         this.socketService.SendMessage(message);
     }
 
-    public void getMessages()
-    {
+    public void getMessages() {
         // request to socket here
     }
 }

@@ -5,50 +5,42 @@
         controller!.connect();
     }
 
-    private static void disconnect()
-    {
+    private static void disconnect() {
         controller!.disconnect();
     }
 
-    private static void createUser()
-    {
+    private static void createUser() {
         // get user data here
         controller!.createUser();
     }
 
-    private static void createProfile()
-    {
+    private static void createProfile() {
         // get profile data here
         controller!.createProfile();
     }
 
-    private static void addPhoto()
-    {
+    private static void addPhoto() {
         // get photo url
         controller!.addPhoto();
     }
 
-    private static void getProfiles()
-    {
+    private static void getProfiles() {
         controller!.getProfiles();
         // log profiles here
     }
 
-    private static void getProfile()
-    {
+    private static void getProfile() {
         controller!.getProfile();
         // log profile here
     }
 
-    private static void sendMessage()
-    {
+    private static void sendMessage() {
         Console.WriteLine("Ingrese el mensaje:");
         string message = Console.ReadLine() ?? "";
         controller!.sendMessage(message);
     }
 
-    private static void getMessages()
-    {
+    private static void getMessages() {
         controller!.getMessages();
         // log messages here
     }
