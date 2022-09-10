@@ -7,4 +7,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="persistence\" />
+    <None Remove="domain\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="persistence\" />
+    <Folder Include="domain\" />
+  </ItemGroup>
 </Project>

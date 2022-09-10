@@ -84,7 +84,7 @@
 
     public void UpdateMessage(Message message)
     {
-        lock (this.profiles)
+        lock (this.messages)
         {
             Message? foundMessage = this.messages.Find((m) => m.Id == message.Id);
             if (foundMessage != null)
