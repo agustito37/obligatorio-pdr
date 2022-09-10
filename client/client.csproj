@@ -11,9 +11,11 @@
   <ItemGroup>
     <None Remove="utils\" />
     <None Remove="domain\" />
+    <None Remove="persistence\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="utils\" />
     <Folder Include="domain\" />
+    <Folder Include="persistence\" />
   </ItemGroup>
 </Project>

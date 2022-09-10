@@ -22,6 +22,7 @@ public class SocketService
         socketServer.Bind(localEndpoint);
 
         socketServer.Listen(1);
+        Console.WriteLine("Esperando conexiones...");
 
         while (true)
         {
