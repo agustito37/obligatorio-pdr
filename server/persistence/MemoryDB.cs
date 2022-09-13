@@ -10,7 +10,12 @@
 
     public List<User> GetUsers() {
         lock (this.users) {
-            return this.users;
+            // deep clone to avoid shared read references
+            return this.users.ConvertAll(user => new User {
+                Id = user.Id,
+                Username = user.Username,
+                Password = user.Password,
+            });
         }
     }
 
@@ -32,7 +37,15 @@
     {
         lock (this.profiles)
         {
-            return this.profiles;
+            // deep clone to avoid shared read references
+            return this.profiles.ConvertAll(profile => new Profile
+            {
+                Id = profile.Id,
+                UserId = profile.UserId,
+                Description = profile.Description,
+                ImagePath = profile.ImagePath,
+                Abilites = new List<string>(profile.Abilites),
+            });
         }
     }
 
@@ -68,7 +81,15 @@
     {
         lock (this.messages)
         {
-            return this.messages;
+            // deep clone to avoid shared read references
+            return this.messages.ConvertAll(message => new Message
+            {
+                Id = message.Id,
+                FromUserId = message.Id,
+                ToUserId = message.ToUserId,
+                Text = message.Text,
+                Seen = message.Seen,
+            });
         }
     }
 
