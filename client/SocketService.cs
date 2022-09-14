@@ -41,7 +41,7 @@ public class SocketService
         }
     }
 
-    public void SendMessage(string message) {
+    public void SendData(string message) {
         if (socketClient != null && socketClient.Connected)
         {
             byte[] data = Encoding.UTF8.GetBytes(message);

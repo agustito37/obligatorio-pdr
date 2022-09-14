@@ -1,4 +1,6 @@
-﻿public class Message
+﻿namespace Shared;
+
+public class Message
 {
     public int Id { get; set; }
     public int FromUserId { get; set; }

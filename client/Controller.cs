@@ -36,7 +36,7 @@ public class Controller
     }
 
     public void SendMessage(string message) {
-        this.socketService.SendMessage(message);
+        this.socketService.SendData(message);
     }
 
     public void GetMessages() {

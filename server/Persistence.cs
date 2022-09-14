@@ -1,7 +1,9 @@
-﻿public sealed class MemoryDB
+﻿using Shared;
+
+public sealed class Persistence
 {
     // singleton
-    public static MemoryDB Instance { get; } = new MemoryDB();
+    public static Persistence Instance { get; } = new Persistence();
 
     private int uid = 0;
     private readonly List<User> users = new();
