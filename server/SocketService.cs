@@ -58,7 +58,7 @@ public class SocketService
         }
     }
 
-    public void Reponse(Socket clientSocket, int operation, byte[]? responseData)
+    public void Response(Socket clientSocket, int operation, byte[]? responseData)
     {
         try
         {

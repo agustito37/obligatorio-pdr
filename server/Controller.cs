@@ -63,14 +63,14 @@ public class Controller
         // TODO: add validations on the message, e.g. non existent user ids
         Persistence.Instance.AddMessages(message);
 
-        this.socketService.Reponse(client, (int)Protocol.operations.OK, null);
+        this.socketService.Response(client, (int)Protocol.operations.OK, null);
     }
 
     private void GetMessages(Socket client, string userId) {
         List<Message> messages = Persistence.Instance.GetMessages(Convert.ToInt32(userId));
         byte[] encodedData = Protocol.EncodeList(messages.Cast<object>().ToList(), Message.Encoder);
 
-        this.socketService.Reponse(client, (int)Protocol.operations.OK, encodedData);
+        this.socketService.Response(client, (int)Protocol.operations.OK, encodedData);
 
         // after sent, mark as seen
         List<int> ids = messages.ConvertAll((m) => m.Id);
