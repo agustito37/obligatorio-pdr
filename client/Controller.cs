@@ -45,7 +45,7 @@ public class Controller
         };
         byte[] encodedData = Protocol.Encode(msg, Message.Encoder);
 
-        (int operation, string content) response = this.socketService.Send((int)Protocol.operations.MESSAGE_CREATE, encodedData);
+        (int operation, string content) response = this.socketService.Request((int)Protocol.operations.MESSAGE_CREATE, encodedData);
 
         if (response.operation == (int)Protocol.operations.ERROR)
         {
@@ -54,7 +54,7 @@ public class Controller
     }
 
     public List<Message> GetMessages(string userId) {
-        (int operation, string data) response = this.socketService.Send((int)Protocol.operations.MESSAGE_GET_LIST, Protocol.Encode(userId));
+        (int operation, string data) response = this.socketService.Request((int)Protocol.operations.MESSAGE_GET_LIST, Protocol.Encode(userId));
 
         List<Message> messages = new List<Message>();
         if (response.operation != (int)Protocol.operations.ERROR)

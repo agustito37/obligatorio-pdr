@@ -45,7 +45,7 @@ public class SocketService
         }
     }
 
-    public (int operation, string response) Send(int operation, byte[]? encodedData) {
+    public (int operation, string response) Request(int operation, byte[]? encodedData) {
         if (this.socket != null)
         {
             byte[] sentData = encodedData ?? new byte[0];
