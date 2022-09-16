@@ -21,7 +21,7 @@ public sealed class Persistence
         }
     }
 
-    public void addUser(User user)
+    public void AddUser(User user)
     {
         lock (this.users)
         {
@@ -35,7 +35,7 @@ public sealed class Persistence
         }
     }
 
-    public List<Profile> getProfiles()
+    public List<Profile> GetProfiles()
     {
         lock (this.profiles)
         {
@@ -66,20 +66,7 @@ public sealed class Persistence
         }
     }
 
-    public void UpdateProfile(Profile profile)
-    {
-        lock (this.profiles)
-        {
-            Profile? foundProfile = this.profiles.Find((p) => p.Id == profile.Id);
-            if (foundProfile != null)
-            {
-                // can only update ImagePath
-                foundProfile.ImagePath = profile.ImagePath ?? foundProfile.ImagePath;
-            }
-        }
-    }
-
-    public List<Message> getMessages()
+    public List<Message> GetMessages(int userId)
     {
         lock (this.messages)
         {
@@ -87,11 +74,21 @@ public sealed class Persistence
             return this.messages.ConvertAll(message => new Message
             {
                 Id = message.Id,
-                FromUserId = message.Id,
+                FromUserId = message.FromUserId,
                 ToUserId = message.ToUserId,
                 Text = message.Text,
                 Seen = message.Seen,
-            });
+            }).FindAll((i) => i.FromUserId == userId);
+        }
+    }
+
+    public void SetSeenMessages(List<int> seenIds)
+    {
+        lock (this.messages)
+        {
+            foreach (Message message in this.messages.FindAll((i) => seenIds.Contains(i.Id))) {
+                message.Seen = true;
+            }
         }
     }
 
@@ -102,26 +99,6 @@ public sealed class Persistence
             this.uid += 1;
             message.Id = uid;
             this.messages.Add(message);
-        }
-    }
-
-    public void UpdateMessage(Message message)
-    {
-        lock (this.messages)
-        {
-            Message? foundMessage = this.messages.Find((m) => m.Id == message.Id);
-            if (foundMessage != null)
-            {
-                // can only update Seen
-                foundMessage.Seen = message.Seen ?? foundMessage.Seen;
-            }
-        }
-    }
-
-    public void BlockingTransaction(Delegate deleg) {
-        lock (this)
-        {
-            deleg.DynamicInvoke();
         }
     }
 }

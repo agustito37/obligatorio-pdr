@@ -2,6 +2,8 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Shared;
+using static Shared.Protocol;
 
 public class SocketService
 {
@@ -13,40 +15,60 @@ public class SocketService
         this.port = port;
     }
 
+    public Action<Socket, int, string> RequestHandler { get; set; } = (socket, operation, request) => { };
+
     public void Start() {
         Console.WriteLine("Creando socket...");
 
-        Socket socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         IPEndPoint localEndpoint = new IPEndPoint(IPAddress.Parse(this.ip), this.port);
-        socketServer.Bind(localEndpoint);
+        serverSocket.Bind(localEndpoint);
 
-        socketServer.Listen(1);
+        serverSocket.Listen(1);
         Console.WriteLine("Esperando conexiones...");
 
         while (true)
         {
-            Socket socketClient = socketServer.Accept();
+            Socket clientSocket = serverSocket.Accept();
             Console.WriteLine("Nueva conexión aceptada");
-            new Thread(() => ManageClient(socketClient)).Start();
+            new Thread(() => this.ManageClient(clientSocket)).Start();
         }
     }
 
-    static void ManageClient(Socket socketCliente) {
+    private void ManageClient(Socket clientSocket) {
         try
         {
-            while (socketCliente.Connected)
+            while (clientSocket.Connected)
             {
-                byte[] data = new byte[256];
-                int received = socketCliente.Receive(data);
-                if (received == 0)
-                {
-                    throw new SocketException();
-                }
+                // receive header
+                byte[] data = NetworkDataHelper.Receive(clientSocket, Protocol.headerLen);
+                (int operation, int contentLen) header = Protocol.DecodeHeader(data);
 
-                string message = $"Cliente dice: {Encoding.UTF8.GetString(data)}";
-                Console.WriteLine(message);
+                // receive content
+                data = NetworkDataHelper.Receive(clientSocket, header.contentLen);
+
+                // process request
+                this.RequestHandler(clientSocket, header.operation, Encoding.UTF8.GetString(data));
             }
+        }
+        catch (SocketException)
+        {
+            Console.WriteLine("Cliente Desconectado");
+        }
+    }
+
+    public void Reponse(Socket clientSocket, int operation, byte[]? responseData)
+    {
+        try
+        {
+            byte[] sentData = responseData ?? new byte[0];
+
+            // send response headers
+            NetworkDataHelper.Send(clientSocket, Protocol.EncodeHeader(operation, sentData));
+
+            // send response content
+            NetworkDataHelper.Send(clientSocket, sentData);
         }
         catch (SocketException)
         {

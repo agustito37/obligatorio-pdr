@@ -1,7 +1,7 @@
 ﻿public class Menu
 {
     public string? Title { get; set; }
-    public List<Tuple<String, Delegate>>? Options { get; set; }
+    public List<(string key, Delegate operation)>? Options { get; set; }
     private readonly string EXIT_KEY = "salir";
 
     private string getOptionsMessage()
@@ -10,7 +10,7 @@
         int index = 1;
         foreach (var option in Options!)
         {
-            optionsMessage += index.ToString() + ") " + option.Item1 + "\n";
+            optionsMessage += index.ToString() + ") " + option.key + "\n";
             index += 1;
         }
         optionsMessage += EXIT_KEY + "\n";
@@ -31,7 +31,8 @@
             try
             {
                 int indexOption = int.Parse(input) - 1;
-                option = Options![indexOption].Item2;
+                option = Options![indexOption].operation;
+                Console.WriteLine("### " + Options![indexOption].key + " ###");
             }
             catch (Exception)
             {
