@@ -68,8 +68,8 @@ public class Controller
 
     private void GetMessages(Socket client, string userId) {
         List<Message> messages = Persistence.Instance.GetMessages(Convert.ToInt32(userId));
-        byte[] encodedData = Protocol.EncodeList(messages.Cast<object>().ToList(), Message.Encoder);
 
+        byte[] encodedData = Protocol.EncodeList(messages.Cast<object>().ToList(), Message.Encoder);
         this.socketService.Response(client, (int)Protocol.operations.OK, encodedData);
 
         // after sent, mark as seen
