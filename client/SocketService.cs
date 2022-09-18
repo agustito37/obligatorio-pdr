@@ -17,14 +17,21 @@ public class SocketService
 
     public void Connect() {
         if (this.socket == null || !this.socket.Connected) {
-            Console.WriteLine("Conectando al Servidor...");
-            this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            try
+            {
+                Console.WriteLine("Conectando al Servidor...");
+                this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0);
-            this.socket.Bind(localEndPoint);
+                IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0);
+                this.socket.Bind(localEndPoint);
 
-            IPEndPoint remoteEndpoint = new IPEndPoint(IPAddress.Parse(this.remoteIp), this.remotePort);
-            this.socket!.Connect(remoteEndpoint);
+                IPEndPoint remoteEndpoint = new IPEndPoint(IPAddress.Parse(this.remoteIp), this.remotePort);
+                this.socket!.Connect(remoteEndpoint);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Error al conectarse al servidor");
+            }
         }
         else
         {
