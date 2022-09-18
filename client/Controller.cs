@@ -17,8 +17,20 @@ public class Controller
         this.socketService.Disconnect();
     }
 
-    public void CreateUser() {
-        // request to socket here
+    public int CreateUser(string username, string password) {
+        User user = new User() 
+        {
+            Username = username,
+            Password = password
+        };
+        byte[] encodedData = Protocol.Encode(user, User.Encoder);
+        (int operation, string content) response = this.socketService.Request(Operations.UserCreate, encodedData);
+
+        if (response.operation == Operations.Error)
+        {
+            throw new Exception(response.content);
+        }
+        return int.Parse(response.content);
     }
 
     public void CreateProfile() {

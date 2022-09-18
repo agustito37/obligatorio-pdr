@@ -21,7 +21,7 @@ public sealed class Persistence
         }
     }
 
-    public void AddUser(User user)
+    public int AddUser(User user)
     {
         lock (this.users)
         {
@@ -33,6 +33,7 @@ public sealed class Persistence
                 this.users.Add(user);
             }
         }
+        return user.Id;
     }
 
     public List<Profile> GetProfiles()

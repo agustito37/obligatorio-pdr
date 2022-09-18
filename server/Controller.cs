@@ -38,7 +38,37 @@ public class Controller
     }
 
     private void CreateUser(Socket client, string data) {
+        User user = User.Decoder(data);
 
+        List<string> Errors = new List<string>();
+
+        if (user.Username == String.Empty)
+        {
+            Errors.Add("No puedes dejar vacio el nombre de usuario");
+        }
+        if (user.Password == String.Empty)
+        {
+            Errors.Add("No puedes dejar vacia la contraseña");
+        }
+        if (Persistence.Instance.GetUsers().Where(x => x.Username == user.Username).ToList().Count > 0)
+        {
+            Errors.Add("Ya existe un usuario con ese nombre, por favor ingrese otro");
+
+        }
+        if (Errors.Count > 0)
+        {
+            byte[] encodedMessages = Protocol.EncodeStringList(Errors);
+            this.socketService.Response(client, Operations.Error, encodedMessages);
+
+        }
+        else
+        {
+            Console.WriteLine("Insertando usuario: {0}", user.Username);
+            int id = Persistence.Instance.AddUser(user);
+
+            byte[] encodedMessage = Protocol.EncodeString(id.ToString());
+            this.socketService.Response(client, Operations.Ok, encodedMessage);
+        }
     }
 
     private void CreateProfile(Socket client, string data) {

@@ -12,8 +12,24 @@ public class Client {
     }
 
     private static void CreateUser() {
-        // get user data here
-        controller!.CreateUser();
+        bool flag = false;
+        do
+        {
+            try
+            {
+                Console.WriteLine("Inserte el nombre de usuario");
+                string username = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+                Console.WriteLine("Inserte la contraseña");
+                string password = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+                int id = controller!.CreateUser(username, password);
+                Console.WriteLine("Usuario insertado con el id: {0}", id);
+                flag = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }while (!flag);
     }
 
     private static void CreateProfile() {
