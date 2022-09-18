@@ -45,21 +45,21 @@ public class Controller
         };
         byte[] encodedData = Protocol.Encode(msg, Message.Encoder);
 
-        (int operation, string content) response = this.socketService.Request((int)Protocol.operations.MESSAGE_CREATE, encodedData);
+        (int operation, string content) response = this.socketService.Request(Operations.MessageCreate, encodedData);
 
-        if (response.operation == (int)Protocol.operations.ERROR)
+        if (response.operation == Operations.Error)
         {
             throw new Exception(response.content);
         }
     }
 
     public List<Message> GetMessages(string userId) {
-        (int operation, string data) response = this.socketService.Request((int)Protocol.operations.MESSAGE_GET_LIST, Protocol.Encode(userId));
+        (int operation, string data) response = this.socketService.Request(Operations.MessageGetList, Protocol.EncodeString(userId));
 
         List<Message> messages = new List<Message>();
-        if (response.operation != (int)Protocol.operations.ERROR)
+        if (response.operation != Operations.Error)
         {
-            messages = Protocol.DecodeList(response.data, Message.Decoder).Cast<Message>().ToList();
+            messages = Protocol.DecodeList(response.data, Message.Decoder);
         }
         else
         {

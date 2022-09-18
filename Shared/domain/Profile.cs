@@ -8,10 +8,9 @@ public class Profile
     public string ImagePath { get; set; } = "";
     public List<string> Abilites { get; set; } = new();
 
-    public static string Encoder(Object profile)
+    public static string Encoder(Profile profile)
     {
-        Profile prf = (Profile)profile;
-        return $"{prf.Id}|{prf.UserId}|{prf.Description}|{prf.ImagePath}|{String.Join("^", prf.Abilites.ToArray())}";
+        return $"{profile.Id}|{profile.UserId}|{profile.Description}|{profile.ImagePath}|{String.Join("^", profile.Abilites.ToArray())}";
     }
 
     public static Profile Decoder(string encoded)

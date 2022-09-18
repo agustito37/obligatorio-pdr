@@ -3,35 +3,31 @@ using System.Text;
 
 namespace Shared;
 
+public class Operations {
+    public const int Ok = 0;
+    public const int Error = 1;
+    public const int UserCreate = 2;
+    public const int ProfileCreate = 3;
+    public const int ProfileUpdatePhoto = 4;
+    public const int ProfileGet = 5;
+    public const int ProfileGetList = 6;
+    public const int MessageCreate = 7;
+    public const int MessageGetList = 9;
+}
+
 public class Protocol
 {
     public static readonly int operationLen = 2;
     public static readonly int contentLengthLen = 4;
     public static readonly int headerLen = operationLen + contentLengthLen;
     public static readonly string listSeparator = "#";
-    public enum operations: int {
-        OK = 0,
-        ERROR = 1,
-        USER_CREATE = 2,
-        PROFILE_CREATE = 3,
-        PROFILE_UPDATE_PHOTO = 4,
-        PROFILE_GET = 5,
-        PROFILE_GET_LIST = 6,
-        MESSAGE_CREATE = 7,
-        MESSAGE_GET_LIST = 8
-    };
 
-    public static byte[] Encode(string message)
+    public static byte[] EncodeString(string message)
     {
         return Encoding.UTF8.GetBytes(message);
     }
 
-    public static byte[] Encode(Object entity, Func<Object, string> encoder)
-    {
-        return Encoding.UTF8.GetBytes(encoder(entity));
-    }
-
-    public static byte[] EncodeList(List<string> messageList)
+    public static byte[] EncodeStringList(List<string> messageList)
     {
         string message = "";
         for (int i = 0; i < messageList.Count; i++)
@@ -45,7 +41,27 @@ public class Protocol
         return Encoding.UTF8.GetBytes(message);
     }
 
-    public static byte[] EncodeList(List<Object> entityList, Func<Object, string> encoder)
+    public static List<string> DecodeStringList(string encodedData)
+    {
+        List<string> entityList = new();
+
+        if (encodedData != "")
+        {
+            foreach (string msg in encodedData.Split(Protocol.listSeparator))
+            {
+                entityList.Add(msg);
+            }
+        }
+
+        return entityList;
+    }
+
+    public static byte[] Encode<T>(T entity, Func<T, string> encoder)
+    {
+        return Encoding.UTF8.GetBytes(encoder(entity));
+    }
+
+    public static byte[] EncodeList<T>(List<T> entityList, Func<T, string> encoder)
     {
         string message = "";
         for (int i = 0; i < entityList.Count; i++) {
@@ -57,33 +73,18 @@ public class Protocol
         return Encoding.UTF8.GetBytes(message);
     }
 
-    public static Object Decode(string encodedData, Func<string, Object> decoder)
+    public static T Decode<T>(string encodedData, Func<string, T> decoder)
     {
         return decoder(encodedData);
     }
 
-    public static List<Object> DecodeList(string encodedData, Func<string, Object> decoder)
+    public static List<T> DecodeList<T>(string encodedData, Func<string, T> decoder)
     {
-        List<Object> entityList = new ();
+        List<T> entityList = new ();
 
         if (encodedData != "") {
             foreach (string msg in encodedData.Split(Protocol.listSeparator)) {
                 entityList.Add(decoder(msg));
-            }
-        }
-
-        return entityList;
-    }
-
-    public static List<string> DecodeList(string encodedData)
-    {
-        List<string> entityList = new();
-
-        if (encodedData != "")
-        {
-            foreach (string msg in encodedData.Split(Protocol.listSeparator))
-            {
-                entityList.Add(msg);
             }
         }
 

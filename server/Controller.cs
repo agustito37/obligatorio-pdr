@@ -12,25 +12,25 @@ public class Controller
         {
             switch (operation)
             {
-                case (int)Protocol.operations.USER_CREATE:
+                case Operations.UserCreate:
                     this.CreateUser(client, data);
                     break;
-                case (int)Protocol.operations.PROFILE_CREATE:
+                case Operations.ProfileCreate:
                     this.CreateProfile(client, data);
                     break;
-                case (int)Protocol.operations.PROFILE_UPDATE_PHOTO:
+                case Operations.ProfileUpdatePhoto:
                     this.AddPhoto(client, data);
                     break;
-                case (int)Protocol.operations.PROFILE_GET:
+                case Operations.ProfileGet:
                     this.GetProfile(client, data);
                     break;
-                case (int)Protocol.operations.PROFILE_GET_LIST:
+                case Operations.ProfileGetList:
                     this.GetProfiles(client, data);
                     break;
-                case (int)Protocol.operations.MESSAGE_CREATE:
+                case Operations.MessageCreate:
                     this.SendMessage(client, data);
                     break;
-                case (int)Protocol.operations.MESSAGE_GET_LIST:
+                case Operations.MessageGetList:
                     this.GetMessages(client, data);
                     break;
             }
@@ -63,14 +63,14 @@ public class Controller
         // TODO: add validations on the message, e.g. non existent user ids
         Persistence.Instance.AddMessages(message);
 
-        this.socketService.Response(client, (int)Protocol.operations.OK, null);
+        this.socketService.Response(client, Operations.Ok, null);
     }
 
     private void GetMessages(Socket client, string userId) {
         List<Message> messages = Persistence.Instance.GetMessages(Convert.ToInt32(userId));
 
-        byte[] encodedData = Protocol.EncodeList(messages.Cast<object>().ToList(), Message.Encoder);
-        this.socketService.Response(client, (int)Protocol.operations.OK, encodedData);
+        byte[] encodedData = Protocol.EncodeList(messages, Message.Encoder);
+        this.socketService.Response(client, Operations.Ok, encodedData);
 
         // after sent, mark as seen
         List<int> ids = messages.ConvertAll((m) => m.Id);

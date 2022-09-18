@@ -6,10 +6,9 @@ public class User
     public string Username { get; set; } = "";
     public string Password { get; set; } = "";
 
-    public static string Encoder(Object user)
+    public static string Encoder(User user)
     {
-        User usr = (User)user;
-        return $"{usr.Id}|{usr.Username}|{usr.Password}";
+        return $"{user.Id}|{user.Username}|{user.Password}";
     }
 
     public static User Decoder(string encoded)

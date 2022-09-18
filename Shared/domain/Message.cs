@@ -8,10 +8,9 @@ public class Message
     public string Text { get; set; } = "";
     public bool Seen { get; set; } = false;
 
-    public static string Encoder(Object message)
+    public static string Encoder(Message message)
     {
-        Message msg = (Message)message;
-        return $"{msg.Id}|{msg.FromUserId}|{msg.ToUserId}|{msg.Text}|{msg.Seen}";
+        return $"{message.Id}|{message.FromUserId}|{message.ToUserId}|{message.Text}|{message.Seen}";
     }
 
     public static Message Decoder(string encoded)
