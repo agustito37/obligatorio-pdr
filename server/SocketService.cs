@@ -48,7 +48,7 @@ public class SocketService
                 // receive content
                 data = NetworkDataHelper.Receive(clientSocket, header.contentLen);
 
-                // process request
+                // process request on controller
                 this.RequestHandler(clientSocket, header.operation, Encoding.UTF8.GetString(data));
             }
         }
