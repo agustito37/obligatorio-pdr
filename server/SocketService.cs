@@ -49,7 +49,7 @@ public class SocketService
                 data = NetworkDataHelper.Receive(clientSocket, header.contentLen);
 
                 // process request on controller
-                this.RequestHandler(clientSocket, header.operation, Encoding.UTF8.GetString(data));
+                this.RequestHandler(clientSocket, header.operation, Protocol.DecodeBytes(data));
             }
         }
         catch (SocketException)

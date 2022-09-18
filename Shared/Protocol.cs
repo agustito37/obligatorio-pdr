@@ -22,9 +22,14 @@ public class Protocol
     public static readonly int headerLen = operationLen + contentLengthLen;
     public static readonly string listSeparator = "#";
 
-    public static byte[] EncodeString(string message)
+    public static byte[] EncodeString(string toEncode)
     {
-        return Encoding.UTF8.GetBytes(message);
+        return Encoding.UTF8.GetBytes(toEncode);
+    }
+
+    public static string DecodeBytes(byte[] toDecode)
+    {
+        return Encoding.UTF8.GetString(toDecode);
     }
 
     public static byte[] EncodeStringList(List<string> messageList)
@@ -38,7 +43,7 @@ public class Protocol
                 message += Protocol.listSeparator;
             }
         }
-        return Encoding.UTF8.GetBytes(message);
+        return EncodeString(message);
     }
 
     public static List<string> DecodeStringList(string encodedData)
@@ -58,7 +63,7 @@ public class Protocol
 
     public static byte[] Encode<T>(T entity, Func<T, string> encoder)
     {
-        return Encoding.UTF8.GetBytes(encoder(entity));
+        return EncodeString(encoder(entity));
     }
 
     public static byte[] EncodeList<T>(List<T> entityList, Func<T, string> encoder)
@@ -70,7 +75,7 @@ public class Protocol
                 message += Protocol.listSeparator;
             }
         }
-        return Encoding.UTF8.GetBytes(message);
+        return EncodeString(message);
     }
 
     public static T Decode<T>(string encodedData, Func<string, T> decoder)

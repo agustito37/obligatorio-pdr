@@ -62,12 +62,11 @@ public class SocketService
 
             // receive response content
             // that could be:
-            // empty string if is OK response
-            // string with description if is ERROR response
-            // encoded string if is an Object response
+            // OK response, could have content or not
+            // ERROR response, description of error in content
             responseData = NetworkDataHelper.Receive(this.socket, header.responseContenLen);
 
-            return (header.responseOperation, Encoding.UTF8.GetString(responseData));
+            return (header.responseOperation, Protocol.DecodeBytes(responseData));
         }
         else
         {
