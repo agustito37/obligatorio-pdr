@@ -1,11 +1,21 @@
-﻿class Server
+﻿using Shared;
+
+namespace Server
 {
-    public static void Main() {
-        Console.WriteLine("Iniciando servidor...");
+    class Server
+    {
+        static readonly SettingsManager settingsManager = new SettingsManager();
+        public static void Main()
+        {
+            Console.WriteLine("Iniciando servidor...");
 
-        SocketService socketService = new SocketService("127.0.0.1", 5000);
-        Controller controller = new Controller(socketService);
+            string ServerIp = settingsManager.ReadSettings(ServerConfig.ServerIPConfigKey);
+            int ServerPort = int.Parse(settingsManager.ReadSettings(ServerConfig.ServerPortConfigKey));
 
-        socketService.Start();
+            SocketService socketService = new SocketService(ServerIp, ServerPort);
+            Controller controller = new Controller(socketService);
+
+            socketService.Start();
+        }
     }
 }

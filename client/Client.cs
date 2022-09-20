@@ -1,6 +1,10 @@
 ﻿using Shared;
 
-public class Client {
+public class Client
+{
+
+    static readonly SettingsManager settingsManager = new SettingsManager();
+
     private static Controller? controller;
 
     private static void Connect() {
@@ -88,7 +92,11 @@ public class Client {
     public static void Main() {
         Console.WriteLine("Iniciando cliente...");
 
-        SocketService socketService = new SocketService("127.0.0.1", 5000);
+
+        string ServerIp = settingsManager.ReadSettings(ServerConfig.ServerIPConfigKey);
+        int ServerPort = int.Parse(settingsManager.ReadSettings(ServerConfig.ServerPortConfigKey));
+
+        SocketService socketService = new SocketService(ServerIp, ServerPort);
         controller = new Controller(socketService);
 
         Menu mainMenu = new()
