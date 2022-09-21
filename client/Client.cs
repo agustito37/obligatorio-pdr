@@ -37,8 +37,39 @@ public class Client
     }
 
     private static void CreateProfile() {
-        // get profile data here
-        controller!.CreateProfile();
+        bool flag = false;
+        bool abilitisEnd = false;
+        List<string> abilities=new List<string>();
+        do
+        {
+            try
+            {
+                Console.WriteLine("Inserte el Id del usuario ");
+                int userId = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
+                Console.WriteLine("Inserte la descripcion ");
+                string description = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+                Console.WriteLine("Inserte la imagen del perfil");
+                string imagePath = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+                while (!abilitisEnd)
+                {
+                    Console.WriteLine("Inserte una habilidad(Para dejar de insertar inserte Listo)");
+                    string ability = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+                    if (!ability.Equals("Listo"))
+                    {
+                        abilities.Add(ability);
+                    }
+                    else abilitisEnd = true;
+                }
+                
+                int id = controller!.CreateProfile(userId,  description,  imagePath, abilities);
+                Console.WriteLine("Perfil insertado con el id: {0}", id);
+                flag = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        } while (!flag);
     }
 
     private static void AddPhoto() {
@@ -47,13 +78,39 @@ public class Client
     }
 
     private static void GetProfiles() {
-        controller!.GetProfiles();
-        // log profiles here
+        Console.Write("Ingrese la habilidad de perfil a buscar:");
+        string ability = Console.ReadLine() ?? "";
+
+
+        List<Profile> profiles = controller!.GetProfiles(ability);
+
+        Console.WriteLine("--- Perfil ---");
+        foreach (Profile profile in profiles)
+        {
+            Console.WriteLine("Id: " + profile.Id);
+            Console.WriteLine("User Id: " + profile.UserId);
+            Console.WriteLine("Descripcion: " + profile.Description);
+            Console.WriteLine("Habilidades: " + profile.Abilites);
+            Console.WriteLine("Imagen: " + profile.ImagePath);
+            Console.WriteLine("----------------");
+        }
+
+        
     }
 
     private static void GetProfile() {
-        controller!.GetProfile();
-        // log profile here
+        Console.Write("Ingrese el Id del usuario a obtener perfil:");
+        string userId = Console.ReadLine() ?? "";
+
+        Profile profile = controller!.GetProfile(userId);
+
+        Console.WriteLine("--- Perfil ---");
+        Console.WriteLine("Id: " + profile.Id);
+        Console.WriteLine("User Id: " + profile.UserId);
+        Console.WriteLine("Descripcion: " + profile.Description);
+        Console.WriteLine("Habilidades: " + profile.Abilites);
+        Console.WriteLine("Imagen: " + profile.ImagePath);
+        Console.WriteLine("----------------");
     }
 
     private static void SendMessage() {
