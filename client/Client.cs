@@ -54,7 +54,7 @@ public class Client
                 {
                     Console.WriteLine("Inserte una habilidad(Para dejar de insertar inserte Listo)");
                     string ability = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
-                    if (!ability.Equals("Listo"))
+                    if (!ability.Equals("terminar"))
                     {
                         abilities.Add(ability);
                     }
