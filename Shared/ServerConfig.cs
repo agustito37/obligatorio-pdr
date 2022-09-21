@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shared
+namespace Shared;
+
+public static class ServerConfig
 {
-    public static class ServerConfig
-    {
-        public static string ServerIPConfigKey = "ServerIpAddress";
-        public static string ServerPortConfigKey = "ServerPort";
-    }
+    public static string ServerIPConfigKey = "ServerIpAddress";
+    public static string ServerPortConfigKey = "ServerPort";
 }
