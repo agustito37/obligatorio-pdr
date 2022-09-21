@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace Shared;
+//namespace Shared;
 
 public class Operations {
     public const int Ok = 0;

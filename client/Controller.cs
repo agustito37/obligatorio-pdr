@@ -32,21 +32,59 @@ public class Controller
         }
         return int.Parse(response.content);
     }
-
-    public void CreateProfile() {
-        // request to socket here
+    
+    public int CreateProfile(int userId, string description, string imagePath, List<string> abilities) {
+        Profile profile = new Profile()
+        {
+            Abilites=abilities,
+            Description=description,
+            ImagePath=imagePath,
+            UserId=userId   
+        };
+        byte[] encodedData = Protocol.Encode(profile, Profile.Encoder);
+        (int operation, string content) response = this.socketService.Request(Operations.ProfileCreate, encodedData);
+        if (response.operation == Operations.Error)
+        {
+            throw new Exception(response.content);
+        }
+        return int.Parse(response.content);
     }
 
     public void AddPhoto() {
         // request to socket here
     }
 
-    public void GetProfiles() {
-        // request to socket here
+    public List<Profile> GetProfiles(string ability) {
+       
+        (int operation, string data) response = this.socketService.Request(Operations.ProfileGetList, Protocol.EncodeString(ability));
+
+        List<Profile> profiles = new List<Profile>();
+        if (response.operation != Operations.Error)
+        {
+            profiles = Protocol.DecodeList(response.data, Profile.Decoder);
+        }
+        else
+        {
+            throw new Exception(response.data);
+        }
+
+        return profiles;
     }
 
-    public void GetProfile() {
-        // request to socket here
+    public Profile GetProfile(string userId) {
+        (int operation, string data) response = this.socketService.Request(Operations.ProfileGet, Protocol.EncodeString(userId));
+
+        Profile profile = new Profile();
+        if (response.operation != Operations.Error)
+        {
+            profile = Protocol.Decode(response.data, Profile.Decoder);
+        }
+        else
+        {
+            throw new Exception(response.data);
+        }
+
+        return profile;
     }
 
     public void SendMessage(int fromUserId, int toUserId, string message) {
@@ -80,4 +118,5 @@ public class Controller
 
         return messages;
     }
+
 }

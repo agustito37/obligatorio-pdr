@@ -36,6 +36,21 @@ public sealed class Persistence
         return user.Id;
     }
 
+    public List<Profile> GetProfiles(string ability)
+    {
+        lock (this.profiles)
+        {
+            // deep clone to avoid shared read references
+            return this.profiles.ConvertAll(profile => new Profile
+            {
+                Id = profile.Id,
+                UserId = profile.UserId,
+                Description = profile.Description,
+                ImagePath = profile.ImagePath,
+                Abilites = new List<string>(profile.Abilites),
+            }).FindAll((i) => i.Abilites.Contains(ability));
+        }
+    }
     public List<Profile> GetProfiles()
     {
         lock (this.profiles)
@@ -52,7 +67,7 @@ public sealed class Persistence
         }
     }
 
-    public void AddProfile(Profile profile)
+    public int AddProfile(Profile profile)
     {
         lock (this.profiles)
         {
@@ -65,6 +80,7 @@ public sealed class Persistence
                 this.profiles.Add(profile);
             }
         }
+        return profile.Id;
     }
 
     public List<Message> GetMessages(int userId)
@@ -82,7 +98,7 @@ public sealed class Persistence
             }).FindAll((i) => i.FromUserId == userId);
         }
     }
-
+   
     public void SetSeenMessages(List<int> seenIds)
     {
         lock (this.messages)
