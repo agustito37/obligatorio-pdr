@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using Shared;
 
@@ -73,11 +74,47 @@ public class SocketService
             // ERROR response, description of error in content
             responseData = NetworkDataHelper.Receive(this.socket, header.responseContenLen);
 
-            return (header.responseOperation, Protocol.DecodeBytes(responseData));
+            return (header.responseOperation, Protocol.DecodeString(responseData));
         }
         else
         {
             throw new Exception("No hay una conexión establecida");
         }
+    }
+
+    public (int operation, string response) SendFile(int operation, byte[]? encodedData, string path)
+    {
+        if (this.socket == null)
+        {
+            throw new Exception("No hay una conexión establecida");
+        }
+
+        if (!FileHandler.FileExists(path)) {
+            throw new Exception("Archivo no existente");
+        }
+
+        byte[] sentData = encodedData ?? new byte[0];
+
+        // send headers
+        NetworkDataHelper.Send(this.socket, Protocol.EncodeHeader(operation, sentData));
+
+        // send parameters (profile id)
+        NetworkDataHelper.Send(this.socket, sentData);
+
+        // send file
+        FileCommsHandler fileCommsHandler = new FileCommsHandler(this.socket);
+        fileCommsHandler.SendFile(path);
+
+        // receive response header
+        byte[] responseData = NetworkDataHelper.Receive(this.socket, Protocol.headerLen);
+        (int responseOperation, int responseContenLen) header = Protocol.DecodeHeader(responseData);
+
+        // receive response content
+        // that could be:
+        // OK response, could have content or not
+        // ERROR response, description of error in content
+        responseData = NetworkDataHelper.Receive(this.socket, header.responseContenLen);
+
+        return (header.responseOperation, Protocol.DecodeString(responseData));
     }
 }

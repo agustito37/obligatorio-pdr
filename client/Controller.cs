@@ -50,7 +50,19 @@ public class Controller
         return int.Parse(response.content);
     }
 
-    public void AddPhoto() {
+    public void AddPhoto(string id, string path) {
+
+        byte[] encodedData = Protocol.EncodeString(id);
+        (int operation, string content) response = this.socketService.SendFile(Operations.ProfileUpdatePhoto, encodedData, path);
+
+        if (response.operation == Operations.Error)
+        {
+            throw new Exception(response.content);
+        }
+    }
+
+    public void GetPhoto()
+    {
         // request to socket here
     }
 

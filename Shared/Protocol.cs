@@ -13,21 +13,51 @@ public class Operations {
     public const int ProfileGetList = 6;
     public const int MessageCreate = 7;
     public const int MessageGetList = 9;
+    public const int ProfileGetPhoto = 10;
 }
 
 public class Protocol
 {
+    public static readonly int FixedDataSize = 4;
+    public static int FixedFileSize = 8;
+    public static int MaxPacketSize = 32768;
     public static readonly int operationLen = 2;
     public static readonly int contentLengthLen = 4;
     public static readonly int headerLen = operationLen + contentLengthLen;
     public static readonly string listSeparator = "#";
+
+    public static long CalculateFileParts(long fileSize)
+    {
+        var fileParts = fileSize / MaxPacketSize;
+        return fileParts * MaxPacketSize == fileSize ? fileParts : fileParts + 1;
+    }
+
+    public static byte[] EncodeInt(int value)
+    {
+        return BitConverter.GetBytes(value);
+    }
+
+    public static int DecodeInt(byte[] value)
+    {
+        return BitConverter.ToInt32(value);
+    }
+
+    public static byte[] EncodeLong(long value)
+    {
+        return BitConverter.GetBytes(value);
+    }
+
+    public static long DecodeLong(byte[] value)
+    {
+        return BitConverter.ToInt64(value);
+    }
 
     public static byte[] EncodeString(string toEncode)
     {
         return Encoding.UTF8.GetBytes(toEncode);
     }
 
-    public static string DecodeBytes(byte[] toDecode)
+    public static string DecodeString(byte[] toDecode)
     {
         return Encoding.UTF8.GetString(toDecode);
     }

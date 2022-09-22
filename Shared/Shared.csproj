@@ -9,9 +9,11 @@
 
   <ItemGroup>
     <None Remove="domain\" />
+    <None Remove="stream\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="domain\" />
+    <Folder Include="stream\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.1" />

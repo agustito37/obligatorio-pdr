@@ -16,6 +16,7 @@ public class SocketService
     }
 
     public Action<Socket, int, string> RequestHandler { get; set; } = (socket, operation, request) => { };
+    public Action<Socket, int, string, string> SendFileHandler { get; set; } = (socket, operation, param, path) => { };
 
     public void Start() {
         Console.WriteLine("Creando socket...");
@@ -48,8 +49,21 @@ public class SocketService
                 // receive content
                 data = NetworkDataHelper.Receive(clientSocket, header.contentLen);
 
-                // process request on controller
-                this.RequestHandler(clientSocket, header.operation, Protocol.DecodeBytes(data));
+                if (header.operation == Operations.ProfileUpdatePhoto)
+                {
+                    // receive photo
+                    FileCommsHandler fileCommsHandler = new FileCommsHandler(clientSocket);
+                    string path = fileCommsHandler.ReceiveFile();
+
+                    // process request
+                    List<string> param = new() { Protocol.DecodeString(data), path };
+                    this.SendFileHandler(clientSocket, header.operation, Protocol.DecodeString(data), path);
+                }
+                else {
+                    // process request 
+                    this.RequestHandler(clientSocket, header.operation, Protocol.DecodeString(data));
+                }
+                
             }
         }
         catch (SocketException)

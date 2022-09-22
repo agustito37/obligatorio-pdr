@@ -19,8 +19,8 @@ public class Controller
                 case Operations.ProfileCreate:
                     this.CreateProfile(client, data);
                     break;
-                case Operations.ProfileUpdatePhoto:
-                    this.AddPhoto(client, data);
+                case Operations.ProfileGetPhoto:
+                    this.GetPhoto(client, data);
                     break;
                 case Operations.ProfileGet:
                     this.GetProfile(client, data);
@@ -33,6 +33,15 @@ public class Controller
                     break;
                 case Operations.MessageGetList:
                     this.GetMessages(client, data);
+                    break;
+            }
+        };
+        this.socketService.SendFileHandler = (Socket client, int operation, string param, string path) =>
+        {
+            switch (operation)
+            {
+                case Operations.ProfileUpdatePhoto:
+                    this.AddPhoto(client, param, path);
                     break;
             }
         };
@@ -105,7 +114,14 @@ public class Controller
         }
     }
 
-    private void AddPhoto(Socket client, string data) {
+    private void AddPhoto(Socket client, string idPerfil, string path) {
+        int id = int.Parse(idPerfil);
+        Persistence.Instance.SetProfilePhoto(id, path);
+        this.socketService.Response(client, Operations.Ok, null);
+    }
+
+    private void GetPhoto(Socket client, string data)
+    {
 
     }
 

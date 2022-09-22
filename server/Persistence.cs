@@ -83,6 +83,17 @@ public sealed class Persistence
         return profile.Id;
     }
 
+    public void SetProfilePhoto(int id, string path)
+    {
+        lock (this.profiles)
+        {
+            Profile? foundProfile = this.profiles.Find((u) => u.Id == id);
+            if (foundProfile != null) {
+                foundProfile.ImagePath = path;
+            }
+        }
+    }
+
     public List<Message> GetMessages(int userId)
     {
         lock (this.messages)

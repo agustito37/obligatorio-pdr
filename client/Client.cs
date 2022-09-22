@@ -52,7 +52,7 @@ public class Client
                 string imagePath = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
                 while (!abilitisEnd)
                 {
-                    Console.WriteLine("Inserte una habilidad(Para dejar de insertar inserte Listo)");
+                    Console.WriteLine("Inserte una habilidad(Para dejar de insertar inserte: terminar)");
                     string ability = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
                     if (!ability.Equals("terminar"))
                     {
@@ -73,8 +73,20 @@ public class Client
     }
 
     private static void AddPhoto() {
-        // get photo url
-        controller!.AddPhoto();
+        Console.WriteLine("Inserte id de perfil");
+        string id = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+
+        Console.WriteLine("Inserte la ruta");
+        string path = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+
+        controller!.AddPhoto(id, path);
+
+        Console.WriteLine("Foto actualizada");
+    }
+
+    private static void GetPhoto()
+    {
+        controller!.GetPhoto();
     }
 
     private static void GetProfiles() {
