@@ -16,7 +16,7 @@ public class SocketService
     }
 
     public Action<Socket, int, string> RequestHandler { get; set; } = (socket, operation, request) => { };
-    public Action<Socket, int, string, string> SendFileHandler { get; set; } = (socket, operation, param, path) => { };
+    public Action<Socket, int, string, string> FileRequestHandler { get; set; } = (socket, operation, param, path) => { };
 
     public void Start() {
         Console.WriteLine("Creando socket...");
@@ -57,7 +57,7 @@ public class SocketService
 
                     // process request
                     List<string> param = new() { Protocol.DecodeString(data), path };
-                    this.SendFileHandler(clientSocket, header.operation, Protocol.DecodeString(data), path);
+                    this.FileRequestHandler(clientSocket, header.operation, Protocol.DecodeString(data), path);
                 }
                 else {
                     // process request 

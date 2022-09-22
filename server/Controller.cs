@@ -36,7 +36,7 @@ public class Controller
                     break;
             }
         };
-        this.socketService.SendFileHandler = (Socket client, int operation, string param, string path) =>
+        this.socketService.FileRequestHandler = (Socket client, int operation, string param, string path) =>
         {
             switch (operation)
             {
