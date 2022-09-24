@@ -122,7 +122,11 @@ public class Client
             Console.WriteLine("Id: " + profile.Id);
             Console.WriteLine("User Id: " + profile.UserId);
             Console.WriteLine("Descripcion: " + profile.Description);
-            Console.WriteLine("Habilidades: " + profile.Abilites);
+            Console.WriteLine("Habilidades:");
+            for (int i = 0; i < profile.Abilites.Count; i++)
+            {
+                Console.WriteLine(profile.Abilites[i].ToString()); 
+            }
             Console.WriteLine("Imagen: " + profile.ImagePath);
             Console.WriteLine("----------------");
         }
