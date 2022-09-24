@@ -95,11 +95,31 @@ public class Client
     }
 
     private static void GetProfiles() {
-        Console.Write("Ingrese la habilidad de perfil a buscar:");
-        string ability = Console.ReadLine() ?? "";
+        Console.WriteLine("Buscar perfil  por:");
+        Console.WriteLine("1) Descripcion");
+        Console.WriteLine("2) Habilidad");
+        var userInput = Console.ReadLine();
+        int input = int.TryParse(userInput, out input) ? input : 1000;
+        string message = "";
 
+        while (input != 1 && input != 2)
+        {
+            Console.WriteLine("La opcion no existe, ingrese denuevo");
+            userInput = Console.ReadLine();
+            input = int.TryParse(userInput, out input) ? input : 1000;
+        }
+        if (input == 1)
+        {
+            Console.WriteLine("Ingrese la descripcio de buscar");
+            message = "byDescription" + "#" + Console.ReadLine();
+        }
+        else if (input == 2)
+        {
+            Console.WriteLine("Ingrese la descripcion a buscar");
+            message = "by" + "#" + Console.ReadLine();
+        }
 
-        List<Profile> profiles = controller!.GetProfiles(ability);
+        List<Profile> profiles = controller!.GetProfiles(message);
 
         Console.WriteLine("--- Perfil ---");
         foreach (Profile profile in profiles)
@@ -107,7 +127,11 @@ public class Client
             Console.WriteLine("Id: " + profile.Id);
             Console.WriteLine("User Id: " + profile.UserId);
             Console.WriteLine("Descripcion: " + profile.Description);
-            Console.WriteLine("Habilidades: " + profile.Abilites);
+            Console.WriteLine("Habilidades:");
+            for (int i = 0; i < profile.Abilites.Count; i++)
+            {
+                Console.WriteLine(profile.Abilites[i].ToString()); 
+            }
             Console.WriteLine("Imagen: " + profile.ImagePath);
             Console.WriteLine("----------------");
         }

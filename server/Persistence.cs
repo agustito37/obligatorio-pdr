@@ -36,19 +36,34 @@ public sealed class Persistence
         return user.Id;
     }
 
-    public List<Profile> GetProfiles(string ability)
+    public List<Profile> GetProfiles(string data)
     {
         lock (this.profiles)
         {
-            // deep clone to avoid shared read references
-            return this.profiles.ConvertAll(profile => new Profile
+            // deep clone to avoid shared read reference
+            string[] search = data.Split("#");
+            if (search[0].Equals("byDescription"))
             {
-                Id = profile.Id,
-                UserId = profile.UserId,
-                Description = profile.Description,
-                ImagePath = profile.ImagePath,
-                Abilites = new List<string>(profile.Abilites),
-            }).FindAll((i) => i.Abilites.Contains(ability));
+                return this.profiles.ConvertAll(profile => new Profile
+                {
+                    Id = profile.Id,
+                    UserId = profile.UserId,
+                    Description = profile.Description,
+                    ImagePath = profile.ImagePath,
+                    Abilites = new List<string>(profile.Abilites),
+                }).FindAll((i) => i.Abilites.Contains(search[1]));
+            }
+            else
+            {
+                return this.profiles.ConvertAll(profile => new Profile
+                {
+                    Id = profile.Id,
+                    UserId = profile.UserId,
+                    Description = profile.Description,
+                    ImagePath = profile.ImagePath,
+                    Abilites = new List<string>(profile.Abilites),
+                }).FindAll((i) => i.Description.Equals(search[1]));
+            }
         }
     }
 

@@ -75,9 +75,9 @@ public class Controller
         return response.content;
     }
 
-    public List<Profile> GetProfiles(string ability) {
+    public List<Profile> GetProfiles(string data) {
        
-        (int operation, string data) response = this.socketService.Request(Operations.ProfileGetList, Protocol.EncodeString(ability));
+        (int operation, string data) response = this.socketService.Request(Operations.ProfileGetList, Protocol.EncodeString(data));
 
         List<Profile> profiles = new List<Profile>();
         if (response.operation != Operations.Error)
