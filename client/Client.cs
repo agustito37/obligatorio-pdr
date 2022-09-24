@@ -86,7 +86,12 @@ public class Client
 
     private static void GetPhoto()
     {
-        controller!.GetPhoto();
+        Console.WriteLine("Inserte id de perfil");
+        string id = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+
+        string fileName = controller!.GetPhoto(id);
+
+        Console.WriteLine("Nombre foto perfil: " + fileName);
     }
 
     private static void GetProfiles() {
@@ -106,8 +111,6 @@ public class Client
             Console.WriteLine("Imagen: " + profile.ImagePath);
             Console.WriteLine("----------------");
         }
-
-        
     }
 
     private static void GetProfile() {
@@ -177,6 +180,7 @@ public class Client
                 ("Alta usuario", CreateUser),
                 ("Alta perfil de trabajo", CreateProfile),
                 ("Asociar foto de perfil de trabajo", AddPhoto),
+                ("Obtener foto de perfil de trabajo", GetPhoto),
                 ("Consultar perfiles existentes", GetProfiles),
                 ("Consultar un perfil específico", GetProfile),
                 ("Enviar mensajes", SendMessage),

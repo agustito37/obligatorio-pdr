@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -16,7 +17,6 @@ public class SocketService
     }
 
     public Action<Socket, int, string> RequestHandler { get; set; } = (socket, operation, request) => { };
-    public Action<Socket, int, string, string> FileRequestHandler { get; set; } = (socket, operation, param, path) => { };
 
     public void Start() {
         Console.WriteLine("Creando socket...");
@@ -49,21 +49,8 @@ public class SocketService
                 // receive content
                 data = NetworkDataHelper.Receive(clientSocket, header.contentLen);
 
-                if (header.operation == Operations.ProfileUpdatePhoto)
-                {
-                    // receive photo
-                    FileCommsHandler fileCommsHandler = new FileCommsHandler(clientSocket);
-                    string path = fileCommsHandler.ReceiveFile();
-
-                    // process request
-                    List<string> param = new() { Protocol.DecodeString(data), path };
-                    this.FileRequestHandler(clientSocket, header.operation, Protocol.DecodeString(data), path);
-                }
-                else {
-                    // process request 
-                    this.RequestHandler(clientSocket, header.operation, Protocol.DecodeString(data));
-                }
-                
+                // process request 
+                this.RequestHandler(clientSocket, header.operation, Protocol.DecodeString(data));
             }
         }
         catch (SocketException)
@@ -88,5 +75,17 @@ public class SocketService
         {
             Console.WriteLine("Cliente Desconectado");
         }
+    }
+
+    public string ReceiveFile(Socket clientSocket)
+    {
+        FileCommsHandler fileCommsHandler = new FileCommsHandler(clientSocket);
+        return fileCommsHandler.ReceiveFile();
+    }
+
+    public void SendFile(Socket clientSocket, string path)
+    {
+        FileCommsHandler fileCommsHandler = new FileCommsHandler(clientSocket);
+        fileCommsHandler.SendFile(path);
     }
 }

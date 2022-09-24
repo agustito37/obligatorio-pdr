@@ -51,6 +51,7 @@ public sealed class Persistence
             }).FindAll((i) => i.Abilites.Contains(ability));
         }
     }
+
     public List<Profile> GetProfiles()
     {
         lock (this.profiles)

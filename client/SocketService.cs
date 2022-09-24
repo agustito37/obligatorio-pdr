@@ -84,37 +84,34 @@ public class SocketService
 
     public (int operation, string response) SendFile(int operation, byte[]? encodedData, string path)
     {
-        if (this.socket == null)
-        {
-            throw new Exception("No hay una conexión establecida");
-        }
-
         if (!FileHandler.FileExists(path)) {
             throw new Exception("Archivo no existente");
         }
 
-        byte[] sentData = encodedData ?? new byte[0];
+        // make a control request
+        (int responseOperation, string responseData) header = this.Request(operation, encodedData);
 
-        // send headers
-        NetworkDataHelper.Send(this.socket, Protocol.EncodeHeader(operation, sentData));
+        // if response is ok, send file stream
+        if (header.responseOperation == Operations.Ok)
+        {
+            FileCommsHandler fileCommsHandler = new FileCommsHandler(this.socket!);
+            fileCommsHandler.SendFile(path);
+        }
 
-        // send parameters (profile id)
-        NetworkDataHelper.Send(this.socket, sentData);
+        return (header.responseOperation, header.responseData);
+    }
 
-        // send file
-        FileCommsHandler fileCommsHandler = new FileCommsHandler(this.socket);
-        fileCommsHandler.SendFile(path);
+    public (int operation, string fileName) GetFile(int operation, byte[]? encodedData)
+    {
+        // make a control request
+        (int responseOperation, string responseData) header = this.Request(operation, encodedData);
 
-        // receive response header
-        byte[] responseData = NetworkDataHelper.Receive(this.socket, Protocol.headerLen);
-        (int responseOperation, int responseContenLen) header = Protocol.DecodeHeader(responseData);
+        // if response is ok, receive file stream
+        if (header.responseOperation == Operations.Ok) {
+            FileCommsHandler fileCommsHandler = new FileCommsHandler(this.socket!);
+            fileCommsHandler.ReceiveFile();
+        }
 
-        // receive response content
-        // that could be:
-        // OK response, could have content or not
-        // ERROR response, description of error in content
-        responseData = NetworkDataHelper.Receive(this.socket, header.responseContenLen);
-
-        return (header.responseOperation, Protocol.DecodeString(responseData));
+        return (header.responseOperation, header.responseData);
     }
 }

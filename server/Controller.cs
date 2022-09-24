@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using Shared;
@@ -22,6 +23,9 @@ public class Controller
                 case Operations.ProfileGetPhoto:
                     this.GetPhoto(client, data);
                     break;
+                case Operations.ProfileUpdatePhoto:
+                    this.AddPhoto(client, data);
+                    break;
                 case Operations.ProfileGet:
                     this.GetProfile(client, data);
                     break;
@@ -33,15 +37,6 @@ public class Controller
                     break;
                 case Operations.MessageGetList:
                     this.GetMessages(client, data);
-                    break;
-            }
-        };
-        this.socketService.FileRequestHandler = (Socket client, int operation, string param, string path) =>
-        {
-            switch (operation)
-            {
-                case Operations.ProfileUpdatePhoto:
-                    this.AddPhoto(client, param, path);
                     break;
             }
         };
@@ -67,8 +62,8 @@ public class Controller
         }
         if (Errors.Count > 0)
         {
-            byte[] encodedMessages = Protocol.EncodeStringList(Errors);
-            this.socketService.Response(client, Operations.Error, encodedMessages);
+            byte[] encodedData = Protocol.EncodeStringList(Errors);
+            this.socketService.Response(client, Operations.Error, encodedData);
 
         }
         else
@@ -76,8 +71,8 @@ public class Controller
             Console.WriteLine("Insertando usuario: {0}", user.Username);
             int id = Persistence.Instance.AddUser(user);
 
-            byte[] encodedMessage = Protocol.EncodeString(id.ToString());
-            this.socketService.Response(client, Operations.Ok, encodedMessage);
+            byte[] encodedData = Protocol.EncodeString(id.ToString());
+            this.socketService.Response(client, Operations.Ok, encodedData);
         }
     }
 
@@ -109,20 +104,69 @@ public class Controller
             Console.WriteLine("Insertando perfil: {0}", profile.Description);
             int id = Persistence.Instance.AddProfile(profile);
 
-            byte[] encodedMessage = Protocol.EncodeString(id.ToString());
-            this.socketService.Response(client, Operations.Ok, encodedMessage);
+            byte[] encodedData = Protocol.EncodeString(id.ToString());
+            this.socketService.Response(client, Operations.Ok, encodedData);
         }
     }
 
-    private void AddPhoto(Socket client, string idPerfil, string path) {
+    private void AddPhoto(Socket client, string idPerfil) {
+        Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.Id == int.Parse(idPerfil));
+
+        if (profile == null)
+        {
+            byte[] encodedData = Protocol.EncodeString("Perfil no existente");
+            this.socketService.Response(client, Operations.Error, encodedData);
+            return;
+        }
+
+        // send control Ok before streaming
+        byte[] encodedParam = Protocol.EncodeString(profile.ImagePath);
+        this.socketService.Response(client, Operations.Ok, null);
+
+        string path = "";
+        try
+        {
+            // receive file stream
+            path = this.socketService.ReceiveFile(client);
+        }
+        catch (Exception) {
+            Console.WriteLine("Error al enviar archivo");
+        }
+
         int id = int.Parse(idPerfil);
         Persistence.Instance.SetProfilePhoto(id, path);
-        this.socketService.Response(client, Operations.Ok, null);
     }
 
-    private void GetPhoto(Socket client, string data)
+    private void GetPhoto(Socket client, string idPerfil)
     {
+        Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.Id == int.Parse(idPerfil));
 
+        if (profile == null) {
+            byte[] encodedData = Protocol.EncodeString("Perfil no existente");
+            this.socketService.Response(client, Operations.Error, encodedData);
+            return;
+        }
+
+        if (profile.ImagePath == "")
+        {
+            byte[] encodedData = Protocol.EncodeString("El perfil no contiene imagen");
+            this.socketService.Response(client, Operations.Error, encodedData);
+            return;
+        }
+
+        // send control Ok before streaming
+        byte[] encodedParam = Protocol.EncodeString(profile.ImagePath);
+        this.socketService.Response(client, Operations.Ok, encodedParam);
+
+        try
+        {
+            // send file stream
+            this.socketService.SendFile(client, profile.ImagePath);
+        }
+        catch (Exception)
+        {
+            Console.WriteLine("Error al enviar archivo");
+        }
     }
 
     private void GetProfiles(Socket client, string ability) {

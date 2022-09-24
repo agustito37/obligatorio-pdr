@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Shared;
 
 public class Controller
@@ -61,9 +62,17 @@ public class Controller
         }
     }
 
-    public void GetPhoto()
+    public string GetPhoto(string id)
     {
-        // request to socket here
+        byte[] encodedData = Protocol.EncodeString(id);
+        (int operation, string content) response = this.socketService.GetFile(Operations.ProfileGetPhoto, encodedData);
+
+        if (response.operation == Operations.Error)
+        {
+            throw new Exception(response.content);
+        }
+
+        return response.content;
     }
 
     public List<Profile> GetProfiles(string ability) {
