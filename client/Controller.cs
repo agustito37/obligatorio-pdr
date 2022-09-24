@@ -18,43 +18,46 @@ public class Controller
         this.socketService.Disconnect();
     }
 
-    public int CreateUser(string username, string password) {
+    public int CreateUser(string username, string password)
+    {
         User user = new User() 
         {
             Username = username,
             Password = password
         };
-        byte[] encodedData = Protocol.Encode(user, User.Encoder);
-        (int operation, string content) response = this.socketService.Request(Operations.UserCreate, encodedData);
+
+        (int operation, string content) response = this.socketService.Request(Operations.UserCreate, Protocol.Encode(user, User.Encoder));
 
         if (response.operation == Operations.Error)
         {
             throw new Exception(response.content);
         }
+
         return int.Parse(response.content);
     }
     
-    public int CreateProfile(int userId, string description, string imagePath, List<string> abilities) {
+    public int CreateProfile(int userId, string description, List<string> abilities)
+    {
         Profile profile = new Profile()
         {
             Abilites=abilities,
             Description=description,
-            ImagePath=imagePath,
             UserId=userId   
         };
-        byte[] encodedData = Protocol.Encode(profile, Profile.Encoder);
-        (int operation, string content) response = this.socketService.Request(Operations.ProfileCreate, encodedData);
+
+        (int operation, string content) response = this.socketService.Request(Operations.ProfileCreate, Protocol.Encode(profile, Profile.Encoder));
+
         if (response.operation == Operations.Error)
         {
             throw new Exception(response.content);
         }
+
         return int.Parse(response.content);
     }
 
-    public void AddPhoto(string id, string path) {
-
-        byte[] encodedData = Protocol.EncodeString(id);
-        (int operation, string content) response = this.socketService.SendFile(Operations.ProfileUpdatePhoto, encodedData, path);
+    public void AddPhoto(string id, string path)
+    {
+        (int operation, string content) response = this.socketService.SendFile(Operations.ProfileUpdatePhoto, Protocol.EncodeString(id), path);
 
         if (response.operation == Operations.Error)
         {
@@ -64,8 +67,7 @@ public class Controller
 
     public string GetPhoto(string id)
     {
-        byte[] encodedData = Protocol.EncodeString(id);
-        (int operation, string content) response = this.socketService.GetFile(Operations.ProfileGetPhoto, encodedData);
+        (int operation, string content) response = this.socketService.GetFile(Operations.ProfileGetPhoto, Protocol.EncodeString(id));
 
         if (response.operation == Operations.Error)
         {
@@ -75,8 +77,8 @@ public class Controller
         return response.content;
     }
 
-    public List<Profile> GetProfiles(string data) {
-       
+    public List<Profile> GetProfiles(string data)
+    {
         (int operation, string data) response = this.socketService.Request(Operations.ProfileGetList, Protocol.EncodeString(data));
 
         List<Profile> profiles = new List<Profile>();
@@ -92,8 +94,8 @@ public class Controller
         return profiles;
     }
 
-    public Profile GetProfile(string userId) {
-        (int operation, string data) response = this.socketService.Request(Operations.ProfileGet, Protocol.EncodeString(userId));
+    public Profile GetProfile(string profileId) {
+        (int operation, string data) response = this.socketService.Request(Operations.ProfileGet, Protocol.EncodeString(profileId));
 
         Profile profile = new Profile();
         if (response.operation != Operations.Error)
@@ -108,15 +110,15 @@ public class Controller
         return profile;
     }
 
-    public void SendMessage(int fromUserId, int toUserId, string message) {
+    public void SendMessage(int fromUserId, int toUserId, string message)
+    {
         Message msg = new() {
             FromUserId = fromUserId,
             ToUserId = toUserId,
             Text = message,
         };
-        byte[] encodedData = Protocol.Encode(msg, Message.Encoder);
 
-        (int operation, string content) response = this.socketService.Request(Operations.MessageCreate, encodedData);
+        (int operation, string content) response = this.socketService.Request(Operations.MessageCreate, Protocol.Encode(msg, Message.Encoder));
 
         if (response.operation == Operations.Error)
         {

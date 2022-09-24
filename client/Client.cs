@@ -48,8 +48,6 @@ public class Client
                 int userId = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
                 Console.WriteLine("Inserte la descripcion ");
                 string description = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
-                Console.WriteLine("Inserte la imagen del perfil");
-                string imagePath = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
                 while (!abilitisEnd)
                 {
                     Console.WriteLine("Inserte una habilidad(Para dejar de insertar inserte: terminar)");
@@ -61,7 +59,7 @@ public class Client
                     else abilitisEnd = true;
                 }
                 
-                int id = controller!.CreateProfile(userId,  description,  imagePath, abilities);
+                int id = controller!.CreateProfile(userId,  description, abilities);
                 Console.WriteLine("Perfil insertado con el id: {0}", id);
                 flag = true;
             }
@@ -79,9 +77,16 @@ public class Client
         Console.WriteLine("Inserte la ruta");
         string path = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
 
-        controller!.AddPhoto(id, path);
+        try
+        {
+            controller!.AddPhoto(id, path);
 
-        Console.WriteLine("Foto actualizada");
+            Console.WriteLine("Foto actualizada");
+        }
+        catch (Exception e)
+        {
+            Console.Write(e.Message);
+        }
     }
 
     private static void GetPhoto()
@@ -89,9 +94,16 @@ public class Client
         Console.WriteLine("Inserte id de perfil");
         string id = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
 
-        string fileName = controller!.GetPhoto(id);
+        try
+        {
+            string fileName = controller!.GetPhoto(id);
 
-        Console.WriteLine("Nombre foto perfil: " + fileName);
+            Console.WriteLine("Nombre foto perfil: " + fileName);
+        }
+        catch (Exception e)
+        {
+            Console.Write(e.Message);
+        }
     }
 
     private static void GetProfiles() {
@@ -119,69 +131,102 @@ public class Client
             message = "by" + "#" + Console.ReadLine();
         }
 
-        List<Profile> profiles = controller!.GetProfiles(message);
-
-        Console.WriteLine("--- Perfil ---");
-        foreach (Profile profile in profiles)
+        try
         {
+            List<Profile> profiles = controller!.GetProfiles(message);
+
+            Console.WriteLine("--- Perfiles ---");
+            foreach (Profile profile in profiles)
+            {
+                Console.WriteLine("Id: " + profile.Id);
+                Console.WriteLine("User Id: " + profile.UserId);
+                Console.WriteLine("Descripcion: " + profile.Description);
+                Console.WriteLine("Habilidades:");
+                for (int i = 0; i < profile.Abilites.Count; i++)
+                {
+                    Console.WriteLine(profile.Abilites[i].ToString());
+                }
+                Console.WriteLine("Imagen: " + profile.ImagePath);
+                Console.WriteLine("----------------");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.Write(e.Message);
+        }
+    }
+
+    private static void GetProfile() {
+        Console.Write("Ingrese el Id del perfil de usuario:");
+        string profileId = Console.ReadLine() ?? "";
+
+        try
+        {
+            Profile profile = controller!.GetProfile(profileId);
+
+            Console.WriteLine("--- Perfil ---");
             Console.WriteLine("Id: " + profile.Id);
             Console.WriteLine("User Id: " + profile.UserId);
             Console.WriteLine("Descripcion: " + profile.Description);
             Console.WriteLine("Habilidades:");
             for (int i = 0; i < profile.Abilites.Count; i++)
             {
-                Console.WriteLine(profile.Abilites[i].ToString()); 
+                Console.WriteLine(profile.Abilites[i].ToString());
             }
             Console.WriteLine("Imagen: " + profile.ImagePath);
             Console.WriteLine("----------------");
         }
-    }
-
-    private static void GetProfile() {
-        Console.Write("Ingrese el Id del usuario a obtener perfil:");
-        string userId = Console.ReadLine() ?? "";
-
-        Profile profile = controller!.GetProfile(userId);
-
-        Console.WriteLine("--- Perfil ---");
-        Console.WriteLine("Id: " + profile.Id);
-        Console.WriteLine("User Id: " + profile.UserId);
-        Console.WriteLine("Descripcion: " + profile.Description);
-        Console.WriteLine("Habilidades: " + profile.Abilites);
-        Console.WriteLine("Imagen: " + profile.ImagePath);
-        Console.WriteLine("----------------");
+        catch (Exception e)
+        {
+            Console.Write(e.Message);
+        }
     }
 
     private static void SendMessage() {
         Console.WriteLine("Ingrese los datos del mensaje");
 
-        // TODO: agregar validaciones para numericos
         Console.Write("Id usuario que envia: ");
-        int fromUserId = int.Parse(Console.ReadLine() ?? "0");
+        int fromUserId = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
         Console.Write("Id usuario que recibe: ");
-        int toUserId = int.Parse(Console.ReadLine() ?? "0");
+        int toUserId = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
         Console.Write("Texto: ");
         string message = Console.ReadLine() ?? "";
 
-        controller!.SendMessage(fromUserId, toUserId, message);
+        try
+        {
+            controller!.SendMessage(fromUserId, toUserId, message);
+        }
+        catch (Exception e)
+        {
+            Console.Write(e.Message);
+        }
+        
     }
 
     private static void GetMessages() {
         Console.Write("Id de usuario que recibe: ");
         string userId = Console.ReadLine() ?? "";
 
-        List<Message> messages = controller!.GetMessages(userId);
+        try
+        {
+            List<Message> messages = controller!.GetMessages(userId);
 
-        Console.WriteLine("--- Mensajes ---");
-        foreach (Message message in messages) {
-            Console.WriteLine("Id: " + message.Id);
-            Console.WriteLine("From: " + message.FromUserId);
-            Console.WriteLine("To: " + message.ToUserId);
-            Console.WriteLine("Seen: " + message.Seen);
-            Console.WriteLine("Text: " + message.Text);
-            Console.WriteLine("----------------");
+            Console.WriteLine("--- Mensajes ---");
+            foreach (Message message in messages)
+            {
+                Console.WriteLine("Id: " + message.Id);
+                Console.WriteLine("From: " + message.FromUserId);
+                Console.WriteLine("To: " + message.ToUserId);
+                Console.WriteLine("Seen: " + message.Seen);
+                Console.WriteLine("Text: " + message.Text);
+                Console.WriteLine("----------------");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.Write(e.Message);
         }
     }
 

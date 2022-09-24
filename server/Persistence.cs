@@ -40,30 +40,27 @@ public sealed class Persistence
     {
         lock (this.profiles)
         {
-            // deep clone to avoid shared read reference
+            List<Profile> profiles;
+
             string[] search = data.Split("#");
             if (search[0].Equals("byDescription"))
             {
-                return this.profiles.ConvertAll(profile => new Profile
-                {
-                    Id = profile.Id,
-                    UserId = profile.UserId,
-                    Description = profile.Description,
-                    ImagePath = profile.ImagePath,
-                    Abilites = new List<string>(profile.Abilites),
-                }).FindAll((i) => i.Abilites.Contains(search[1]));
+                profiles = this.profiles.FindAll((i) => i.Abilites.Contains(search[1]));
             }
             else
             {
-                return this.profiles.ConvertAll(profile => new Profile
-                {
-                    Id = profile.Id,
-                    UserId = profile.UserId,
-                    Description = profile.Description,
-                    ImagePath = profile.ImagePath,
-                    Abilites = new List<string>(profile.Abilites),
-                }).FindAll((i) => i.Description.Equals(search[1]));
+                profiles = this.profiles.FindAll((i) => i.Description.Equals(search[1]));
             }
+
+            // deep clone to avoid shared read reference
+            return profiles.ConvertAll(profile => new Profile
+            {
+                Id = profile.Id,
+                UserId = profile.UserId,
+                Description = profile.Description,
+                ImagePath = profile.ImagePath,
+                Abilites = new List<string>(profile.Abilites),
+            });
         }
     }
 
