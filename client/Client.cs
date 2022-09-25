@@ -134,7 +134,7 @@ public class Client
             foreach (Profile profile in profiles)
             {
                 Console.WriteLine("Id: " + profile.Id);
-                Console.WriteLine("User Id: " + profile.UserId);
+                Console.WriteLine("Id del usuario: " + profile.UserId);
                 Console.WriteLine("Descripcion: " + profile.Description);
                 Console.WriteLine("Habilidades: " + String.Join(", ", profile.Abilites.ToArray()));
                 Console.WriteLine("Imagen: " + profile.ImagePath);
@@ -157,7 +157,7 @@ public class Client
 
             Console.WriteLine("--- Perfil ---");
             Console.WriteLine("Id: " + profile.Id);
-            Console.WriteLine("User Id: " + profile.UserId);
+            Console.WriteLine("Id del usuario: " + profile.UserId);
             Console.WriteLine("Descripcion: " + profile.Description);
             Console.WriteLine("Habilidades: " + String.Join(", ", profile.Abilites.ToArray()));
             Console.WriteLine("Imagen: " + profile.ImagePath);
@@ -193,7 +193,7 @@ public class Client
     }
 
     private static void GetMessages() {
-        Console.Write("Id de usuario que recibe: ");
+        Console.Write("Ingrese el Id de usuario: ");
         int userId = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
         try
@@ -203,11 +203,12 @@ public class Client
             Console.WriteLine("--- Mensajes ---");
             foreach (Message message in messages)
             {
+                Console.WriteLine(message.FromUserId == userId ? "Enviado" : "Recibido");
                 Console.WriteLine("Id: " + message.Id);
-                Console.WriteLine("From: " + message.FromUserId);
-                Console.WriteLine("To: " + message.ToUserId);
-                Console.WriteLine("Seen: " + message.Seen);
-                Console.WriteLine("Text: " + message.Text);
+                Console.WriteLine("De: " + message.FromUserId);
+                Console.WriteLine("Para: " + message.ToUserId);
+                Console.WriteLine("Visto: " + (message.Seen ? "Sí" : "No"));
+                Console.WriteLine("Texto: " + message.Text);
                 Console.WriteLine("----------------");
             }
         }

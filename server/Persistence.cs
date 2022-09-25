@@ -191,7 +191,7 @@ public sealed class Persistence
                 ToUserId = message.ToUserId,
                 Text = message.Text,
                 Seen = message.Seen,
-            }).FindAll((i) => i.FromUserId == userId);
+            }).FindAll((i) => i.FromUserId == userId || i.ToUserId == userId);
         }
     }
    

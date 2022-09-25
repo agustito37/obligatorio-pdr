@@ -199,12 +199,13 @@ public class Controller
     }
 
     private void GetMessages(Socket client, string userId) {
-        List<Message> messages = Persistence.Instance.GetMessages(Convert.ToInt32(userId));
+        int id = Convert.ToInt32(userId);
+        List<Message> messages = Persistence.Instance.GetMessages(id);
 
         this.socketService.Response(client, Operations.Ok, Protocol.EncodeList(messages, Message.Encoder));
 
-        // after sent, mark as seen
-        List<int> ids = messages.ConvertAll((m) => m.Id);
+        // after sent, mark received messages as seen
+        List<int> ids = messages.FindAll((m) => m.ToUserId == id).ConvertAll((m) => m.Id);
         Persistence.Instance.SetSeenMessages(ids);
     }
 }
