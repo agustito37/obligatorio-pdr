@@ -94,8 +94,8 @@ public class Controller
         return profiles;
     }
 
-    public Profile GetProfile(string profileId) {
-        (int operation, string data) response = this.socketService.Request(Operations.ProfileGet, Protocol.EncodeString(profileId));
+    public Profile GetProfile(string userId) {
+        (int operation, string data) response = this.socketService.Request(Operations.ProfileGet, Protocol.EncodeString(userId));
 
         Profile profile = new Profile();
         if (response.operation != Operations.Error)

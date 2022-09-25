@@ -165,8 +165,8 @@ public class Controller
         this.socketService.Response(client, Operations.Ok, Protocol.EncodeList(profiles, Profile.Encoder));
     }
 
-    private void GetProfile(Socket client, string profileId) {
-        Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.Id == int.Parse(profileId));
+    private void GetProfile(Socket client, string userId) {
+        Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.UserId == int.Parse(userId));
 
         if (profile == null) {
             this.socketService.Response(client, Operations.Error, Protocol.EncodeString("Perfil no existente"));

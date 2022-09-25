@@ -157,12 +157,12 @@ public class Client
     }
 
     private static void GetProfile() {
-        Console.Write("Ingrese el Id del perfil de usuario:");
-        string profileId = Console.ReadLine() ?? "";
+        Console.Write("Ingrese el Id del usuario:");
+        string userId = Console.ReadLine() ?? "";
 
         try
         {
-            Profile profile = controller!.GetProfile(profileId);
+            Profile profile = controller!.GetProfile(userId);
 
             Console.WriteLine("--- Perfil ---");
             Console.WriteLine("Id: " + profile.Id);
