@@ -65,7 +65,7 @@ public class SocketService
             NetworkDataHelper.Send(this.socket, sentData);
 
             // receive response header
-            byte[] responseData = NetworkDataHelper.Receive(this.socket, Protocol.headerLen);
+            byte[] responseData = NetworkDataHelper.Receive(this.socket, Protocol.HeaderLen);
             (int responseOperation, int responseContenLen) header = Protocol.DecodeHeader(responseData);
 
             // receive response content

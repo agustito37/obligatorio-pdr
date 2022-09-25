@@ -87,9 +87,9 @@ public class Controller
         {
             Errors.Add("No puedes dejar vacia las habilidades del perfil");
         }
-        if (Persistence.Instance.GetProfiles().Where(x => x.Id == profile.Id).ToList().Count > 0)
+        if (Persistence.Instance.GetProfiles().Where(x => x.UserId == profile.UserId).ToList().Count > 0)
         {
-            Errors.Add("Ya existe un perfil con ese Id, por favor ingrese otro");
+            Errors.Add("Ya existe un perfil para ese usuario");
         }
         if (Errors.Count > 0)
         {
@@ -104,8 +104,8 @@ public class Controller
         }
     }
 
-    private void AddPhoto(Socket client, string idPerfil) {
-        Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.Id == int.Parse(idPerfil));
+    private void AddPhoto(Socket client, string idUsuario) {
+        Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.UserId == int.Parse(idUsuario));
 
         if (profile == null)
         {
@@ -126,13 +126,12 @@ public class Controller
             Console.WriteLine("Error al enviar archivo");
         }
 
-        int id = int.Parse(idPerfil);
-        Persistence.Instance.SetProfilePhoto(id, path);
+        Persistence.Instance.SetProfilePhoto(profile.Id, path);
     }
 
-    private void GetPhoto(Socket client, string idPerfil)
+    private void GetPhoto(Socket client, string idUsuario)
     {
-        Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.Id == int.Parse(idPerfil));
+        Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.UserId == int.Parse(idUsuario));
 
         if (profile == null) {
             this.socketService.Response(client, Operations.Error, Protocol.EncodeString("Perfil no existente"));
@@ -159,8 +158,9 @@ public class Controller
         }
     }
 
-    private void GetProfiles(Socket client, string ability) {
-        List<Profile> profiles = Persistence.Instance.GetProfiles(ability);
+    private void GetProfiles(Socket client, string query) {
+        (string key, string value) filter = Protocol.getParam(query);
+        List<Profile> profiles = Persistence.Instance.GetProfiles(filter.key, filter.value);
 
         this.socketService.Response(client, Operations.Ok, Protocol.EncodeList(profiles, Profile.Encoder));
     }
@@ -193,7 +193,7 @@ public class Controller
             return;
         }
 
-        Persistence.Instance.AddMessages(message);
+        Persistence.Instance.AddMessage(message);
 
         this.socketService.Response(client, Operations.Ok, null);
     }

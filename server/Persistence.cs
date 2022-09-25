@@ -10,6 +10,76 @@ public sealed class Persistence
     private readonly List<Profile> profiles = new();
     private readonly List<Message> messages = new();
 
+    // seed data
+    public Persistence() {
+        this.AddUser(new User() {
+            Username = "Agustin",
+            Password = "password",
+        });
+        this.AddUser(new User()
+        {
+            Username = "Francisco",
+            Password = "password",
+        });
+        this.AddUser(new User()
+        {
+            Username = "Bruno",
+            Password = "password",
+        });
+        this.AddProfile(new Profile() {
+            UserId = 1,
+            Description = "Descripcion de Agustin",
+            Abilites = new List<string>() { "Javascript", "React" },
+        });
+        this.AddProfile(new Profile()
+        {
+            UserId = 2,
+            Description = "Descripcion de Francisco",
+            Abilites = new List<string>() { "Genexus", "Soporte" },
+        });
+        this.AddProfile(new Profile()
+        {
+            UserId = 3,
+            Description = "Descripcion de Bruno",
+            Abilites = new List<string>() { "C#", "Threads" },
+        });
+        this.AddMessage(new Message() {
+            FromUserId = 1,
+            ToUserId = 2,
+            Text = "Mensaje de Agustin a Francisco",
+        });
+        this.AddMessage(new Message()
+        {
+            FromUserId = 1,
+            ToUserId = 3,
+            Text = "Mensaje de Agustin a Bruno",
+        });
+        this.AddMessage(new Message()
+        {
+            FromUserId = 2,
+            ToUserId = 1,
+            Text = "Mensaje de Francisco a Agustin",
+        });
+        this.AddMessage(new Message()
+        {
+            FromUserId = 2,
+            ToUserId = 3,
+            Text = "Mensaje de Francisco a Bruno",
+        });
+        this.AddMessage(new Message()
+        {
+            FromUserId = 3,
+            ToUserId = 1,
+            Text = "Mensaje de Bruno a Agustin",
+        });
+        this.AddMessage(new Message()
+        {
+            FromUserId = 3,
+            ToUserId = 2,
+            Text = "Mensaje de Bruno a Francisco",
+        });
+    }
+
     public List<User> GetUsers() {
         lock (this.users) {
             // deep clone to avoid shared read references
@@ -36,20 +106,22 @@ public sealed class Persistence
         return user.Id;
     }
 
-    public List<Profile> GetProfiles(string data)
+    public List<Profile> GetProfiles(string filter, string value)
     {
         lock (this.profiles)
         {
             List<Profile> profiles;
-
-            string[] search = data.Split("#");
-            if (search[0].Equals("byDescription"))
+            if (filter.Equals("byDescription"))
             {
-                profiles = this.profiles.FindAll((i) => i.Abilites.Contains(search[1]));
+                profiles = this.profiles.FindAll((i) => i.Description.ToLower().Contains(value.ToLower()));
+            }
+            else if (filter.Equals("byAbility"))
+            {
+                profiles = this.profiles.FindAll((i) => i.Abilites.Any((a) => a.ToLower().Contains(value.ToLower())));
             }
             else
             {
-                profiles = this.profiles.FindAll((i) => i.Description.Equals(search[1]));
+                profiles = this.profiles;
             }
 
             // deep clone to avoid shared read reference
@@ -133,7 +205,7 @@ public sealed class Persistence
         }
     }
 
-    public void AddMessages(Message message)
+    public void AddMessage(Message message)
     {
         lock (this.messages)
         {

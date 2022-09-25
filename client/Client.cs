@@ -65,7 +65,7 @@ public class Client
     }
 
     private static void AddPhoto() {
-        Console.WriteLine("Inserte id de perfil");
+        Console.WriteLine("Inserte id de usuario");
         int id = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
         Console.WriteLine("Inserte la ruta");
@@ -85,7 +85,7 @@ public class Client
 
     private static void GetPhoto()
     {
-        Console.WriteLine("Inserte id de perfil");
+        Console.WriteLine("Inserte id de usuario");
         int id = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
         try
@@ -112,21 +112,23 @@ public class Client
             option = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
         }
 
-        string operation = "";
+        string filter = "";
         if (option == 1)
         {
-            Console.WriteLine("Ingrese la descripcion a buscar");
-            operation = "byDescription" + "#" + Console.ReadLine();
+            Console.WriteLine("Ingrese la descripcion a buscar:");
+            string input = Console.ReadLine() ?? "";
+            filter = Protocol.createParam("byDescription", input);
         }
         else if (option == 2)
         {
-            Console.WriteLine("Ingrese la habilidad a buscar");
-            operation = "by" + "#" + Console.ReadLine();
+            Console.WriteLine("Ingrese la habilidad a buscar:");
+            string input = Console.ReadLine() ?? "";
+            filter = Protocol.createParam("byAbility", input);
         }
 
         try
         {
-            List<Profile> profiles = controller!.GetProfiles(operation);
+            List<Profile> profiles = controller!.GetProfiles(filter);
 
             Console.WriteLine("--- Perfiles ---");
             foreach (Profile profile in profiles)
@@ -134,11 +136,7 @@ public class Client
                 Console.WriteLine("Id: " + profile.Id);
                 Console.WriteLine("User Id: " + profile.UserId);
                 Console.WriteLine("Descripcion: " + profile.Description);
-                Console.WriteLine("Habilidades:");
-                for (int i = 0; i < profile.Abilites.Count; i++)
-                {
-                    Console.WriteLine(profile.Abilites[i].ToString());
-                }
+                Console.WriteLine("Habilidades: " + String.Join(", ", profile.Abilites.ToArray()));
                 Console.WriteLine("Imagen: " + profile.ImagePath);
                 Console.WriteLine("----------------");
             }
@@ -161,11 +159,7 @@ public class Client
             Console.WriteLine("Id: " + profile.Id);
             Console.WriteLine("User Id: " + profile.UserId);
             Console.WriteLine("Descripcion: " + profile.Description);
-            Console.WriteLine("Habilidades:");
-            for (int i = 0; i < profile.Abilites.Count; i++)
-            {
-                Console.WriteLine(profile.Abilites[i].ToString());
-            }
+            Console.WriteLine("Habilidades: " + String.Join(", ", profile.Abilites.ToArray()));
             Console.WriteLine("Imagen: " + profile.ImagePath);
             Console.WriteLine("----------------");
         }

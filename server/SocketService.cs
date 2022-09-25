@@ -43,7 +43,7 @@ public class SocketService
             while (clientSocket.Connected)
             {
                 // receive header
-                byte[] data = NetworkDataHelper.Receive(clientSocket, Protocol.headerLen);
+                byte[] data = NetworkDataHelper.Receive(clientSocket, Protocol.HeaderLen);
                 (int operation, int contentLen) header = Protocol.DecodeHeader(data);
 
                 // receive content

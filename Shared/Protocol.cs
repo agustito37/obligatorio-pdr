@@ -19,12 +19,13 @@ public class Operations {
 public class Protocol
 {
     public static readonly int FixedDataSize = 4;
-    public static int FixedFileSize = 8;
-    public static int MaxPacketSize = 32768;
-    public static readonly int operationLen = 2;
-    public static readonly int contentLengthLen = 4;
-    public static readonly int headerLen = operationLen + contentLengthLen;
-    public static readonly string listSeparator = "#";
+    public static readonly int FixedFileSize = 8;
+    public static readonly int MaxPacketSize = 32768;
+    public static readonly int OperationLen = 2;
+    public static readonly int ContentLengthLen = 4;
+    public static readonly int HeaderLen = OperationLen + ContentLengthLen;
+    public static readonly string ListSeparator = "<#>";
+    public static readonly string ParamSeparator = "<=>";
 
     public static long CalculateFileParts(long fileSize)
     {
@@ -67,18 +68,18 @@ public class Protocol
         return Encoding.UTF8.GetString(toDecode);
     }
 
-    public static byte[] EncodeStringList(List<string> messageList)
+    public static byte[] EncodeStringList(List<string> list)
     {
-        string message = "";
-        for (int i = 0; i < messageList.Count; i++)
+        string encoded = "";
+        for (int i = 0; i < list.Count; i++)
         {
-            message += messageList[i];
-            if (i != messageList.Count - 1)
+            encoded += list[i];
+            if (i != list.Count - 1)
             {
-                message += Protocol.listSeparator;
+                encoded += Protocol.ListSeparator;
             }
         }
-        return EncodeString(message);
+        return EncodeString(encoded);
     }
 
     public static List<string> DecodeStringList(string encodedData)
@@ -87,7 +88,7 @@ public class Protocol
 
         if (encodedData != "")
         {
-            foreach (string msg in encodedData.Split(Protocol.listSeparator))
+            foreach (string msg in encodedData.Split(Protocol.ListSeparator))
             {
                 entityList.Add(msg);
             }
@@ -103,14 +104,14 @@ public class Protocol
 
     public static byte[] EncodeList<T>(List<T> entityList, Func<T, string> encoder)
     {
-        string message = "";
+        string encoded = "";
         for (int i = 0; i < entityList.Count; i++) {
-            message += encoder(entityList[i]);
+            encoded += encoder(entityList[i]);
             if (i != entityList.Count - 1) {
-                message += Protocol.listSeparator;
+                encoded += Protocol.ListSeparator;
             }
         }
-        return EncodeString(message);
+        return EncodeString(encoded);
     }
 
     public static T Decode<T>(string encodedData, Func<string, T> decoder)
@@ -123,7 +124,7 @@ public class Protocol
         List<T> entityList = new ();
 
         if (encodedData != "") {
-            foreach (string msg in encodedData.Split(Protocol.listSeparator)) {
+            foreach (string msg in encodedData.Split(Protocol.ListSeparator)) {
                 entityList.Add(decoder(msg));
             }
         }
@@ -140,19 +141,30 @@ public class Protocol
     }
 
     public static byte[] EncodeHeader(int operation, byte[] content) {
-        byte[] operationBytes = FillBytes(BitConverter.GetBytes(operation), operationLen);
-        byte[] lengthBytes = FillBytes(BitConverter.GetBytes(content.Length), contentLengthLen);
+        byte[] operationBytes = FillBytes(BitConverter.GetBytes(operation), OperationLen);
+        byte[] lengthBytes = FillBytes(BitConverter.GetBytes(content.Length), ContentLengthLen);
 
         return operationBytes.Concat(lengthBytes).ToArray();
     }
 
     public static (int operation, int contentLen) DecodeHeader(byte[] bytes)
     {
-        byte[] operationBytes = bytes.Take(operationLen).ToArray();
-        byte[] contentLengthBytes = bytes.Skip(operationLen).Take(contentLengthLen).ToArray();
+        byte[] operationBytes = bytes.Take(OperationLen).ToArray();
+        byte[] contentLengthBytes = bytes.Skip(OperationLen).Take(ContentLengthLen).ToArray();
         int operation = BitConverter.ToInt16(operationBytes);
         int contentLength = BitConverter.ToInt32(contentLengthBytes);
 
         return (operation, contentLength);
+    }
+
+    public static string createParam(string key, string value)
+    {
+        return key + ParamSeparator + value;
+    }
+
+    public static (string key, string value) getParam(string param)
+    {
+        string[] search = param.Split(ParamSeparator);
+        return (search[0], search[1]);
     }
 }
