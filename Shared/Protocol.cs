@@ -57,6 +57,11 @@ public class Protocol
         return Encoding.UTF8.GetBytes(toEncode);
     }
 
+    public static byte[] EncodeString(int toEncode)
+    {
+        return Encoding.UTF8.GetBytes(toEncode.ToString());
+    }
+
     public static string DecodeString(byte[] toDecode)
     {
         return Encoding.UTF8.GetString(toDecode);

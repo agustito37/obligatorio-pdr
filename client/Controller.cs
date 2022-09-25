@@ -55,7 +55,7 @@ public class Controller
         return int.Parse(response.content);
     }
 
-    public void AddPhoto(string id, string path)
+    public void AddPhoto(int id, string path)
     {
         (int operation, string content) response = this.socketService.SendFile(Operations.ProfileUpdatePhoto, Protocol.EncodeString(id), path);
 
@@ -65,7 +65,7 @@ public class Controller
         }
     }
 
-    public string GetPhoto(string id)
+    public string GetPhoto(int id)
     {
         (int operation, string content) response = this.socketService.GetFile(Operations.ProfileGetPhoto, Protocol.EncodeString(id));
 
@@ -94,7 +94,7 @@ public class Controller
         return profiles;
     }
 
-    public Profile GetProfile(string userId) {
+    public Profile GetProfile(int userId) {
         (int operation, string data) response = this.socketService.Request(Operations.ProfileGet, Protocol.EncodeString(userId));
 
         Profile profile = new Profile();
@@ -126,7 +126,7 @@ public class Controller
         }
     }
 
-    public List<Message> GetMessages(string userId) {
+    public List<Message> GetMessages(int userId) {
         (int operation, string data) response = this.socketService.Request(Operations.MessageGetList, Protocol.EncodeString(userId));
 
         List<Message> messages = new List<Message>();

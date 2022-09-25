@@ -16,63 +16,57 @@ public class Client
     }
 
     private static void CreateUser() {
-        bool flag = false;
-        do
+        Console.WriteLine("Inserte el nombre de usuario");
+        string username = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+
+        Console.WriteLine("Inserte la contraseña");
+        string password = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+            
+        try
         {
-            try
-            {
-                Console.WriteLine("Inserte el nombre de usuario");
-                string username = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
-                Console.WriteLine("Inserte la contraseña");
-                string password = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
-                int id = controller!.CreateUser(username, password);
-                Console.WriteLine("Usuario insertado con el id: {0}", id);
-                flag = true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        }while (!flag);
+            int id = controller!.CreateUser(username, password);
+            Console.WriteLine("Usuario insertado con el id: {0}", id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
     }
 
     private static void CreateProfile() {
-        bool flag = false;
-        bool abilitisEnd = false;
-        List<string> abilities=new List<string>();
-        do
+        
+        Console.WriteLine("Inserte el Id del usuario ");
+        int userId = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
+
+        Console.WriteLine("Inserte la descripcion ");
+        string description = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+
+        string ability = "";
+        List<string> abilities = new List<string>();
+        while (ability != "terminar")
         {
-            try
+            Console.WriteLine("Inserte una habilidad - puede salir con 'terminar':");
+            ability = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+            if (!ability.Equals("terminar"))
             {
-                Console.WriteLine("Inserte el Id del usuario ");
-                int userId = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
-                Console.WriteLine("Inserte la descripcion ");
-                string description = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
-                while (!abilitisEnd)
-                {
-                    Console.WriteLine("Inserte una habilidad(Para dejar de insertar inserte: terminar)");
-                    string ability = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
-                    if (!ability.Equals("terminar"))
-                    {
-                        abilities.Add(ability);
-                    }
-                    else abilitisEnd = true;
-                }
-                
-                int id = controller!.CreateProfile(userId,  description, abilities);
-                Console.WriteLine("Perfil insertado con el id: {0}", id);
-                flag = true;
+                abilities.Add(ability);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        } while (!flag);
+        }
+
+        try
+        {
+            int id = controller!.CreateProfile(userId,  description, abilities);
+            Console.WriteLine("Perfil insertado con el id: {0}", id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
     }
 
     private static void AddPhoto() {
         Console.WriteLine("Inserte id de perfil");
-        string id = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+        int id = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
         Console.WriteLine("Inserte la ruta");
         string path = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
@@ -92,7 +86,7 @@ public class Client
     private static void GetPhoto()
     {
         Console.WriteLine("Inserte id de perfil");
-        string id = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
+        int id = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
         try
         {
@@ -110,30 +104,29 @@ public class Client
         Console.WriteLine("Buscar perfil  por:");
         Console.WriteLine("1) Descripcion");
         Console.WriteLine("2) Habilidad");
-        var userInput = Console.ReadLine();
-        int input = int.TryParse(userInput, out input) ? input : 1000;
-        string message = "";
 
-        while (input != 1 && input != 2)
+        int option = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
+        while (option != 1 && option != 2)
         {
             Console.WriteLine("La opcion no existe, ingrese denuevo");
-            userInput = Console.ReadLine();
-            input = int.TryParse(userInput, out input) ? input : 1000;
+            option = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
         }
-        if (input == 1)
-        {
-            Console.WriteLine("Ingrese la descripcio de buscar");
-            message = "byDescription" + "#" + Console.ReadLine();
-        }
-        else if (input == 2)
+
+        string operation = "";
+        if (option == 1)
         {
             Console.WriteLine("Ingrese la descripcion a buscar");
-            message = "by" + "#" + Console.ReadLine();
+            operation = "byDescription" + "#" + Console.ReadLine();
+        }
+        else if (option == 2)
+        {
+            Console.WriteLine("Ingrese la habilidad a buscar");
+            operation = "by" + "#" + Console.ReadLine();
         }
 
         try
         {
-            List<Profile> profiles = controller!.GetProfiles(message);
+            List<Profile> profiles = controller!.GetProfiles(operation);
 
             Console.WriteLine("--- Perfiles ---");
             foreach (Profile profile in profiles)
@@ -158,7 +151,7 @@ public class Client
 
     private static void GetProfile() {
         Console.Write("Ingrese el Id del usuario:");
-        string userId = Console.ReadLine() ?? "";
+        int userId = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
         try
         {
@@ -192,7 +185,7 @@ public class Client
         int toUserId = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
         Console.Write("Texto: ");
-        string message = Console.ReadLine() ?? "";
+        string message = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
 
         try
         {
@@ -207,7 +200,7 @@ public class Client
 
     private static void GetMessages() {
         Console.Write("Id de usuario que recibe: ");
-        string userId = Console.ReadLine() ?? "";
+        int userId = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
         try
         {
@@ -233,7 +226,6 @@ public class Client
     public static void Main() {
         Console.WriteLine("Iniciando cliente...");
 
-
         string ServerIp = settingsManager.ReadSettings(ServerConfig.ServerIPConfigKey);
         int ServerPort = int.Parse(settingsManager.ReadSettings(ServerConfig.ServerPortConfigKey));
 
@@ -245,15 +237,15 @@ public class Client
             Title = "Menu principal",
             Options = new List<(string, Delegate)> {
                 ("Conectarse a servidor", Connect),
-                ("Desconectarse de servidor", Disconnect),
                 ("Alta usuario", CreateUser),
                 ("Alta perfil de trabajo", CreateProfile),
-                ("Asociar foto de perfil de trabajo", AddPhoto),
-                ("Obtener foto de perfil de trabajo", GetPhoto),
                 ("Consultar perfiles existentes", GetProfiles),
                 ("Consultar un perfil específico", GetProfile),
+                ("Asociar foto de perfil de trabajo", AddPhoto),
+                ("Obtener foto de perfil de trabajo", GetPhoto),
                 ("Enviar mensajes", SendMessage),
                 ("Consultar mensajes", GetMessages),
+                ("Desconectarse de servidor", Disconnect),
             }
         };
         mainMenu.Show();
