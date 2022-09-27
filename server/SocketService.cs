@@ -10,6 +10,8 @@ public class SocketService
 {
     private string ip;
     private int port;
+    private List<Socket> clientSockets = new();
+    private Socket? serverSocket = null;
 
     public SocketService(string ip, int port) {
         this.ip = ip;
@@ -19,27 +21,62 @@ public class SocketService
     public Action<Socket, int, string> RequestHandler { get; set; } = (socket, operation, request) => { };
 
     public void Start() {
+        // create socket
         Console.WriteLine("Creando socket...");
-
-        Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
+        this.serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         IPEndPoint localEndpoint = new IPEndPoint(IPAddress.Parse(this.ip), this.port);
-        serverSocket.Bind(localEndpoint);
+        this.serverSocket.Bind(localEndpoint);
 
-        serverSocket.Listen(1);
+        // listen to connections
+        this.serverSocket.Listen(1);
         Console.WriteLine("Esperando conexiones...");
+        new Thread(() => this.AcceptConnections()).Start();
 
-        while (true)
+        // close on command
+        CloseServerOnCommand();
+    }
+
+    private void CloseServerOnCommand() {
+        string input = "";
+        while (input != "salir")
         {
-            Socket clientSocket = serverSocket.Accept();
-            Console.WriteLine("Nueva conexión aceptada");
-            new Thread(() => this.ManageClient(clientSocket)).Start();
+            Console.WriteLine("Ingrese 'salir' para cerrar el servidor");
+            input = ConsoleHelpers.RequestNonEmptyText("El comando no puede estar vacío");
+        }
+
+        // close client socket connections
+        foreach (Socket client in this.clientSockets)
+        {
+            if (client.Connected)
+            {
+                client.Shutdown(SocketShutdown.Both);
+            }
+        }
+
+        // close server socket
+        this.serverSocket!.Close();
+    }
+
+    private void AcceptConnections() {
+        try
+        {
+            while (true)
+            {
+                Socket clientSocket = this.serverSocket!.Accept();
+                Console.WriteLine("Nueva conexión aceptada");
+                new Thread(() => this.ManageClient(clientSocket)).Start();
+            }
+        }
+        catch (SocketException)
+        {
+            Console.WriteLine("Socket cerrado");
         }
     }
 
     private void ManageClient(Socket clientSocket) {
         try
         {
+            this.clientSockets.Add(clientSocket);
             while (clientSocket.Connected)
             {
                 // receive header
@@ -55,7 +92,7 @@ public class SocketService
         }
         catch (SocketException)
         {
-            Console.WriteLine("Cliente Desconectado");
+            Console.WriteLine("Cliente desconectado");
         }
     }
 
@@ -73,7 +110,7 @@ public class SocketService
         }
         catch (SocketException)
         {
-            Console.WriteLine("Cliente Desconectado");
+            Console.WriteLine("Cliente desconectado");
         }
     }
 

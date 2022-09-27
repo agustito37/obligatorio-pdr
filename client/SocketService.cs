@@ -29,9 +29,9 @@ public class SocketService
                 IPEndPoint remoteEndpoint = new IPEndPoint(IPAddress.Parse(this.remoteIp), this.remotePort);
                 this.socket!.Connect(remoteEndpoint);
             }
-            catch (Exception)
+            catch (SocketException)
             {
-                Console.WriteLine("Error al conectarse al servidor");
+                Console.WriteLine("No se puedo conectar con el servidor");
             }
         }
         else
@@ -54,27 +54,33 @@ public class SocketService
     }
 
     public (int operation, string response) Request(int operation, byte[]? encodedData) {
-        if (this.socket != null)
+        if (this.socket != null && this.socket.Connected)
         {
-            byte[] sentData = encodedData ?? new byte[0];
+            try
+            {
+                byte[] sentData = encodedData ?? new byte[0];
 
-            // send headers
-            NetworkDataHelper.Send(this.socket, Protocol.EncodeHeader(operation, sentData));
+                // send headers
+                NetworkDataHelper.Send(this.socket, Protocol.EncodeHeader(operation, sentData));
 
-            // send content
-            NetworkDataHelper.Send(this.socket, sentData);
+                // send content
+                NetworkDataHelper.Send(this.socket, sentData);
 
-            // receive response header
-            byte[] responseData = NetworkDataHelper.Receive(this.socket, Protocol.HeaderLen);
-            (int responseOperation, int responseContenLen) header = Protocol.DecodeHeader(responseData);
+                // receive response header
+                byte[] responseData = NetworkDataHelper.Receive(this.socket, Protocol.HeaderLen);
+                (int responseOperation, int responseContenLen) header = Protocol.DecodeHeader(responseData);
 
-            // receive response content
-            // that could be:
-            // OK response, could have content or not
-            // ERROR response, description of error in content
-            responseData = NetworkDataHelper.Receive(this.socket, header.responseContenLen);
+                // receive response content
+                // that could be:
+                // OK response, could have content or not
+                // ERROR response, description of error in content
+                responseData = NetworkDataHelper.Receive(this.socket, header.responseContenLen);
 
-            return (header.responseOperation, Protocol.DecodeString(responseData));
+                return (header.responseOperation, Protocol.DecodeString(responseData));
+            }
+            catch (SocketException) {
+                throw new Exception("No se pudo conectar con el servidor");
+            }
         }
         else
         {
