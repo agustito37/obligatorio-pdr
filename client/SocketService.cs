@@ -7,11 +7,13 @@ using Shared;
 
 public class SocketService
 {
+    string localIp;
     string remoteIp;
     int remotePort;
     Socket? socket;
 
-    public SocketService(string remoteIp, int remotePort) {
+    public SocketService(string localIp, string remoteIp, int remotePort) {
+        this.localIp = localIp;
         this.remoteIp = remoteIp;
         this.remotePort = remotePort;
     }
@@ -22,8 +24,7 @@ public class SocketService
             {
                 Console.WriteLine("Conectando al Servidor...");
                 this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-                IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0);
+                IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse(this.localIp), 0);
                 this.socket.Bind(localEndPoint);
 
                 IPEndPoint remoteEndpoint = new IPEndPoint(IPAddress.Parse(this.remoteIp), this.remotePort);

@@ -221,10 +221,11 @@ public class Client
     public static void Main() {
         Console.WriteLine("Iniciando cliente...");
 
+        string ClientIp = settingsManager.ReadSettings(ServerConfig.ClientIPConfigKey);
         string ServerIp = settingsManager.ReadSettings(ServerConfig.ServerIPConfigKey);
         int ServerPort = int.Parse(settingsManager.ReadSettings(ServerConfig.ServerPortConfigKey));
 
-        SocketService socketService = new SocketService(ServerIp, ServerPort);
+        SocketService socketService = new SocketService(ClientIp,ServerIp, ServerPort);
         controller = new Controller(socketService);
 
         Menu mainMenu = new()
