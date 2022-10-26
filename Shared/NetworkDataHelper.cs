@@ -4,33 +4,41 @@ namespace Shared;
 
 public class NetworkDataHelper
 {
-    public static void Send(Socket socket, byte[] data)
+    public static void Send(TcpClient client, byte[] data)
     {
-        int offset = 0;
         int size = data.Length;
-        while (offset < size) 
+        NetworkStream stream = client.GetStream();
+        try
         {
-            int sent = socket.Send(data, offset, size - offset, SocketFlags.None);
-            if (sent == 0)
-            {
-                throw new SocketException();
-            }
-            offset += sent; 
+            stream.Write(data, 0, size);
+        }
+        catch (Exception)
+        {
+            throw new SocketException();
         }
     }
 
-    public static byte[] Receive(Socket socket, int limit)
+    public static byte[] Receive(TcpClient client, int limit)
     {
         byte[] data = new byte[limit];
         int offset = 0;
-        while (offset < limit) 
+        NetworkStream stream = client.GetStream();
+        while (offset < limit)
         {
-            int received = socket.Receive(data, offset, limit - offset, SocketFlags.None);
-            if (received == 0) 
+            try
+            {
+                int received = stream.Read(data, offset, limit - offset);
+                if (received == 0)
+                {
+                    throw new SocketException();
+                }
+                offset += received;
+            }
+            catch (Exception)
             {
                 throw new SocketException();
             }
-            offset += received; 
+            
         }
         return data;
     }

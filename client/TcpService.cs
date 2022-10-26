@@ -5,30 +5,29 @@ using System.Reflection.PortableExecutable;
 using System.Text;
 using Shared;
 
-public class SocketService
+public class TcpService
 {
     string localIp;
     string remoteIp;
     int remotePort;
-    Socket? socket;
+    TcpClient? client;
 
-    public SocketService(string localIp, string remoteIp, int remotePort) {
+    public TcpService(string localIp, string remoteIp, int remotePort) {
         this.localIp = localIp;
         this.remoteIp = remoteIp;
         this.remotePort = remotePort;
     }
 
     public void Connect() {
-        if (this.socket == null || !this.socket.Connected) {
+        if (this.client == null || !this.client.Connected) {
             try
             {
                 Console.WriteLine("Conectando al Servidor...");
-                this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse(this.localIp), 0);
-                this.socket.Bind(localEndPoint);
+                this.client = new TcpClient(localEndPoint);
 
                 IPEndPoint remoteEndpoint = new IPEndPoint(IPAddress.Parse(this.remoteIp), this.remotePort);
-                this.socket!.Connect(remoteEndpoint);
+                this.client!.Connect(remoteEndpoint);
             }
             catch (SocketException)
             {
@@ -42,11 +41,11 @@ public class SocketService
     }
 
     public void Disconnect() {
-        if (this.socket != null && this.socket.Connected)
+        if (this.client != null && this.client.Connected)
         {
             Console.WriteLine("Cerrando la conexion...");
-            this.socket.Shutdown(SocketShutdown.Both);
-            this.socket.Close();
+            this.client.GetStream().Close();
+            this.client.Close();
         }
         else
         {
@@ -55,27 +54,27 @@ public class SocketService
     }
 
     public (int operation, string response) Request(int operation, byte[]? encodedData) {
-        if (this.socket != null && this.socket.Connected)
+        if (this.client != null && this.client.Connected)
         {
             try
             {
                 byte[] sentData = encodedData ?? new byte[0];
 
                 // send headers
-                NetworkDataHelper.Send(this.socket, Protocol.EncodeHeader(operation, sentData));
+                NetworkDataHelper.Send(this.client, Protocol.EncodeHeader(operation, sentData));
 
                 // send content
-                NetworkDataHelper.Send(this.socket, sentData);
+                NetworkDataHelper.Send(this.client, sentData);
 
                 // receive response header
-                byte[] responseData = NetworkDataHelper.Receive(this.socket, Protocol.HeaderLen);
+                byte[] responseData = NetworkDataHelper.Receive(this.client, Protocol.HeaderLen);
                 (int responseOperation, int responseContenLen) header = Protocol.DecodeHeader(responseData);
 
                 // receive response content
                 // that could be:
                 // OK response, could have content or not
                 // ERROR response, description of error in content
-                responseData = NetworkDataHelper.Receive(this.socket, header.responseContenLen);
+                responseData = NetworkDataHelper.Receive(this.client, header.responseContenLen);
 
                 return (header.responseOperation, Protocol.DecodeString(responseData));
             }
@@ -101,7 +100,7 @@ public class SocketService
         // if response is ok, send file stream
         if (header.responseOperation == Operations.Ok)
         {
-            FileCommsHandler fileCommsHandler = new FileCommsHandler(this.socket!);
+            FileCommsHandler fileCommsHandler = new FileCommsHandler(this.client!);
             fileCommsHandler.SendFile(path);
         }
 
@@ -115,7 +114,7 @@ public class SocketService
 
         // if response is ok, receive file stream
         if (header.responseOperation == Operations.Ok) {
-            FileCommsHandler fileCommsHandler = new FileCommsHandler(this.socket!);
+            FileCommsHandler fileCommsHandler = new FileCommsHandler(this.client!);
             fileCommsHandler.ReceiveFile();
         }
 

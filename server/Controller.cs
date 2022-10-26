@@ -6,11 +6,11 @@ using Shared;
 
 public class Controller
 {
-    private SocketService socketService;
+    private TcpService service;
 
-    public Controller(SocketService socketService) {
-        this.socketService = socketService;
-        this.socketService.RequestHandler = (Socket client, int operation, string data) =>
+    public Controller(TcpService tcpService) {
+        this.service = tcpService;
+        this.service.RequestHandler = (TcpClient client, int operation, string data) =>
         {
             switch (operation)
             {
@@ -42,7 +42,7 @@ public class Controller
         };
     }
 
-    private void CreateUser(Socket client, string data) {
+    private void CreateUser(TcpClient client, string data) {
         User user = User.Decoder(data);
 
         List<string> Errors = new List<string>();
@@ -62,7 +62,7 @@ public class Controller
         }
         if (Errors.Count > 0)
         {
-            this.socketService.Response(client, Operations.Error, Protocol.EncodeStringList(Errors));
+            this.service.Response(client, Operations.Error, Protocol.EncodeStringList(Errors));
 
         }
         else
@@ -70,11 +70,11 @@ public class Controller
             Console.WriteLine("Insertando usuario: {0}", user.Username);
             int id = Persistence.Instance.AddUser(user);
 
-            this.socketService.Response(client, Operations.Ok, Protocol.EncodeString(id.ToString()));
+            this.service.Response(client, Operations.Ok, Protocol.EncodeString(id.ToString()));
         }
     }
 
-    private void CreateProfile(Socket client, string data) {
+    private void CreateProfile(TcpClient client, string data) {
         Profile profile = Profile.Decoder(data);
 
         List<string> Errors = new List<string>();
@@ -93,116 +93,116 @@ public class Controller
         }
         if (Errors.Count > 0)
         {
-            this.socketService.Response(client, Operations.Error, Protocol.EncodeStringList(Errors));
+            this.service.Response(client, Operations.Error, Protocol.EncodeStringList(Errors));
         }
         else
         {
             Console.WriteLine("Insertando perfil: {0}", profile.Description);
             int id = Persistence.Instance.AddProfile(profile);
 
-            this.socketService.Response(client, Operations.Ok, Protocol.EncodeString(id.ToString()));
+            this.service.Response(client, Operations.Ok, Protocol.EncodeString(id.ToString()));
         }
     }
 
-    private void AddPhoto(Socket client, string idUsuario) {
+    private void AddPhoto(TcpClient client, string idUsuario) {
         Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.UserId == int.Parse(idUsuario));
 
         if (profile == null)
         {
-            this.socketService.Response(client, Operations.Error, Protocol.EncodeString("Perfil no existente"));
+            this.service.Response(client, Operations.Error, Protocol.EncodeString("Perfil no existente"));
             return;
         }
 
         // send control Ok before streaming
-        this.socketService.Response(client, Operations.Ok, null);
+        this.service.Response(client, Operations.Ok, null);
 
         string path = "";
         try
         {
             // receive file stream
-            path = this.socketService.ReceiveFile(client);
+            path = this.service.ReceiveFile(client);
         }
-        catch (Exception) {
+        catch (SocketException) {
             Console.WriteLine("Error al enviar archivo");
         }
 
         Persistence.Instance.SetProfilePhoto(profile.Id, path);
     }
 
-    private void GetPhoto(Socket client, string idUsuario)
+    private void GetPhoto(TcpClient client, string idUsuario)
     {
         Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.UserId == int.Parse(idUsuario));
 
         if (profile == null) {
-            this.socketService.Response(client, Operations.Error, Protocol.EncodeString("Perfil no existente"));
+            this.service.Response(client, Operations.Error, Protocol.EncodeString("Perfil no existente"));
             return;
         }
 
         if (profile.ImagePath == "")
         {
-            this.socketService.Response(client, Operations.Error, Protocol.EncodeString("El perfil no contiene imagen"));
+            this.service.Response(client, Operations.Error, Protocol.EncodeString("El perfil no contiene imagen"));
             return;
         }
 
         // send control Ok before streaming
-        this.socketService.Response(client, Operations.Ok, Protocol.EncodeString(profile.ImagePath));
+        this.service.Response(client, Operations.Ok, Protocol.EncodeString(profile.ImagePath));
 
         try
         {
             // send file stream
-            this.socketService.SendFile(client, profile.ImagePath);
+            this.service.SendFile(client, profile.ImagePath);
         }
-        catch (Exception)
+        catch (SocketException)
         {
             Console.WriteLine("Error al enviar archivo");
         }
     }
 
-    private void GetProfiles(Socket client, string query) {
+    private void GetProfiles(TcpClient client, string query) {
         (string key, string value) filter = Protocol.getParam(query);
         List<Profile> profiles = Persistence.Instance.GetProfiles(filter.key, filter.value);
 
-        this.socketService.Response(client, Operations.Ok, Protocol.EncodeList(profiles, Profile.Encoder));
+        this.service.Response(client, Operations.Ok, Protocol.EncodeList(profiles, Profile.Encoder));
     }
 
-    private void GetProfile(Socket client, string userId) {
+    private void GetProfile(TcpClient client, string userId) {
         Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.UserId == int.Parse(userId));
 
         if (profile == null) {
-            this.socketService.Response(client, Operations.Error, Protocol.EncodeString("Perfil no existente"));
+            this.service.Response(client, Operations.Error, Protocol.EncodeString("Perfil no existente"));
             return;
         }
 
-        this.socketService.Response(client, Operations.Ok, Protocol.Encode(profile, Profile.Encoder));
+        this.service.Response(client, Operations.Ok, Protocol.Encode(profile, Profile.Encoder));
     }
 
-    private void SendMessage(Socket client, string msg) {
+    private void SendMessage(TcpClient client, string msg) {
         Message message = Message.Decoder(msg);
 
         User? userFrom = Persistence.Instance.GetUsers().Find((u) => u.Id == message.FromUserId);
         if (userFrom == null)
         {
-            this.socketService.Response(client, Operations.Error, Protocol.EncodeString("Usuario origen no existente"));
+            this.service.Response(client, Operations.Error, Protocol.EncodeString("Usuario origen no existente"));
             return;
         }
 
         User? userTo = Persistence.Instance.GetUsers().Find((u) => u.Id == message.ToUserId);
         if (userTo == null)
         {
-            this.socketService.Response(client, Operations.Error, Protocol.EncodeString("Usuario destino no existente"));
+            this.service.Response(client, Operations.Error, Protocol.EncodeString("Usuario destino no existente"));
             return;
         }
 
         Persistence.Instance.AddMessage(message);
 
-        this.socketService.Response(client, Operations.Ok, null);
+        this.service.Response(client, Operations.Ok, null);
     }
 
-    private void GetMessages(Socket client, string userId) {
+    private void GetMessages(TcpClient client, string userId) {
         int id = Convert.ToInt32(userId);
         List<Message> messages = Persistence.Instance.GetMessages(id);
 
-        this.socketService.Response(client, Operations.Ok, Protocol.EncodeList(messages, Message.Encoder));
+        this.service.Response(client, Operations.Ok, Protocol.EncodeList(messages, Message.Encoder));
 
         // after sent, mark received messages as seen
         List<int> ids = messages.FindAll((m) => m.ToUserId == id).ConvertAll((m) => m.Id);

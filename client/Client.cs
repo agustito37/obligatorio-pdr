@@ -225,8 +225,8 @@ public class Client
         string ServerIp = settingsManager.ReadSettings(ServerConfig.ServerIPConfigKey);
         int ServerPort = int.Parse(settingsManager.ReadSettings(ServerConfig.ServerPortConfigKey));
 
-        SocketService socketService = new SocketService(ClientIp,ServerIp, ServerPort);
-        controller = new Controller(socketService);
+        TcpService service = new TcpService(ClientIp,ServerIp, ServerPort);
+        controller = new Controller(service);
 
         Menu mainMenu = new()
         {

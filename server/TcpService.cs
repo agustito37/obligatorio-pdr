@@ -6,29 +6,28 @@ using System.Text;
 using Shared;
 using static Shared.Protocol;
 
-public class SocketService
+public class TcpService
 {
     private string ip;
     private int port;
-    private List<Socket> clientSockets = new();
-    private Socket? serverSocket = null;
+    private List<TcpClient> clients = new();
+    private TcpListener? server = null;
 
-    public SocketService(string ip, int port) {
+    public TcpService(string ip, int port) {
         this.ip = ip;
         this.port = port;
     }
 
-    public Action<Socket, int, string> RequestHandler { get; set; } = (socket, operation, request) => { };
+    public Action<TcpClient, int, string> RequestHandler { get; set; } = (client, operation, request) => { };
 
     public void Start() {
-        // create socket
-        Console.WriteLine("Creando socket...");
-        this.serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        // create listener
+        Console.WriteLine("Creando listener...");
         IPEndPoint localEndpoint = new IPEndPoint(IPAddress.Parse(this.ip), this.port);
-        this.serverSocket.Bind(localEndpoint);
+        this.server = new TcpListener(localEndpoint);
 
         // listen to connections
-        this.serverSocket.Listen(1);
+        this.server.Start(100);
         Console.WriteLine("Esperando conexiones...");
         new Thread(() => this.AcceptConnections()).Start();
 
@@ -44,17 +43,18 @@ public class SocketService
             input = ConsoleHelpers.RequestNonEmptyText("El comando no puede estar vacío");
         }
 
-        // close client socket connections
-        foreach (Socket client in this.clientSockets)
+        // close client listener connections
+        foreach (TcpClient client in this.clients)
         {
             if (client.Connected)
             {
-                client.Shutdown(SocketShutdown.Both);
+                client.GetStream().Close();
+                client.Close();
             }
         }
 
-        // close server socket
-        this.serverSocket!.Close();
+        // close server listener
+        this.server!.Stop();
     }
 
     private void AcceptConnections() {
@@ -62,32 +62,32 @@ public class SocketService
         {
             while (true)
             {
-                Socket clientSocket = this.serverSocket!.Accept();
+                TcpClient client = this.server!.AcceptTcpClient();
                 Console.WriteLine("Nueva conexión aceptada");
-                new Thread(() => this.ManageClient(clientSocket)).Start();
+                new Thread(() => this.ManageClient(client)).Start();
             }
         }
         catch (SocketException)
         {
-            Console.WriteLine("Socket cerrado");
+            Console.WriteLine("Tcp Listener cerrado");
         }
     }
 
-    private void ManageClient(Socket clientSocket) {
+    private void ManageClient(TcpClient client) {
         try
         {
-            this.clientSockets.Add(clientSocket);
-            while (clientSocket.Connected)
+            this.clients.Add(client);
+            while (client.Connected)
             {
                 // receive header
-                byte[] data = NetworkDataHelper.Receive(clientSocket, Protocol.HeaderLen);
+                byte[] data = NetworkDataHelper.Receive(client, Protocol.HeaderLen);
                 (int operation, int contentLen) header = Protocol.DecodeHeader(data);
 
                 // receive content
-                data = NetworkDataHelper.Receive(clientSocket, header.contentLen);
+                data = NetworkDataHelper.Receive(client, header.contentLen);
 
                 // process request 
-                this.RequestHandler(clientSocket, header.operation, Protocol.DecodeString(data));
+                this.RequestHandler(client, header.operation, Protocol.DecodeString(data));
             }
         }
         catch (SocketException)
@@ -96,17 +96,17 @@ public class SocketService
         }
     }
 
-    public void Response(Socket clientSocket, int operation, byte[]? responseData)
+    public void Response(TcpClient client, int operation, byte[]? responseData)
     {
         try
         {
             byte[] sentData = responseData ?? new byte[0];
 
             // send response headers
-            NetworkDataHelper.Send(clientSocket, Protocol.EncodeHeader(operation, sentData));
+            NetworkDataHelper.Send(client, Protocol.EncodeHeader(operation, sentData));
 
             // send response content
-            NetworkDataHelper.Send(clientSocket, sentData);
+            NetworkDataHelper.Send(client, sentData);
         }
         catch (SocketException)
         {
@@ -114,15 +114,15 @@ public class SocketService
         }
     }
 
-    public string ReceiveFile(Socket clientSocket)
+    public string ReceiveFile(TcpClient client)
     {
-        FileCommsHandler fileCommsHandler = new FileCommsHandler(clientSocket);
+        FileCommsHandler fileCommsHandler = new FileCommsHandler(client);
         return fileCommsHandler.ReceiveFile();
     }
 
-    public void SendFile(Socket clientSocket, string path)
+    public void SendFile(TcpClient client, string path)
     {
-        FileCommsHandler fileCommsHandler = new FileCommsHandler(clientSocket);
+        FileCommsHandler fileCommsHandler = new FileCommsHandler(client);
         fileCommsHandler.SendFile(path);
     }
 }

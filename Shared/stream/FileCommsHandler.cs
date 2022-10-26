@@ -9,13 +9,13 @@ namespace Shared;
 
 public class FileCommsHandler
 {
-    private readonly FileStreamHandler _fileStreamHandler;
-    private Socket _socket;
+    private readonly FileStreamHandler fileStreamHandler;
+    private TcpClient client;
 
-    public FileCommsHandler(Socket socket)
+    public FileCommsHandler(TcpClient client)
     {
-        _fileStreamHandler = new FileStreamHandler();
-        _socket = socket;
+        this.fileStreamHandler = new FileStreamHandler();
+        this.client = client;
     }
 
     public void SendFile(string path)
@@ -24,15 +24,15 @@ public class FileCommsHandler
         {
             var fileName = FileHandler.GetFileName(path);
             // ---> Enviar el largo del nombre del archivo
-            NetworkDataHelper.Send(_socket, Protocol.EncodeInt(fileName.Length));
+            NetworkDataHelper.Send(client, Protocol.EncodeInt(fileName.Length));
             // ---> Enviar el nombre del archivo
-            NetworkDataHelper.Send(_socket, Protocol.EncodeString(fileName));
+            NetworkDataHelper.Send(client, Protocol.EncodeString(fileName));
 
             // ---> Obtener el tamaño del archivo
             long fileSize = FileHandler.GetFileSize(path);
             // ---> Enviar el tamaño del archivo
             var convertedFileSize = Protocol.EncodeLong(fileSize);
-            NetworkDataHelper.Send(_socket, convertedFileSize);
+            NetworkDataHelper.Send(client, convertedFileSize);
             // ---> Enviar el archivo (pero con file stream)
             SendFileWithStream(fileSize, path);
         }
@@ -46,12 +46,12 @@ public class FileCommsHandler
     {
         // ---> Recibir el largo del nombre del archivo
         int fileNameSize = Protocol.DecodeInt(
-            NetworkDataHelper.Receive(_socket, Protocol.FixedDataSize));
+            NetworkDataHelper.Receive(client, Protocol.FixedDataSize));
         // ---> Recibir el nombre del archivo
-        string fileName = Protocol.DecodeString(NetworkDataHelper.Receive(_socket, fileNameSize));
+        string fileName = Protocol.DecodeString(NetworkDataHelper.Receive(client, fileNameSize));
         // ---> Recibir el largo del archivo
         long fileSize = Protocol.DecodeLong(
-            NetworkDataHelper.Receive(_socket, Protocol.FixedFileSize));
+            NetworkDataHelper.Receive(client, Protocol.FixedFileSize));
         // ---> Recibir el archivo
         ReceiveFileWithStreams(fileSize, fileName);
 
@@ -70,16 +70,16 @@ public class FileCommsHandler
             if (currentPart == fileParts)
             {
                 var lastPartSize = (int)(fileSize - offset);
-                data = _fileStreamHandler.Read(path, offset, lastPartSize);
+                data = fileStreamHandler.Read(path, offset, lastPartSize);
                 offset += lastPartSize;
             }
             else
             {
-                data = _fileStreamHandler.Read(path, offset, Protocol.MaxPacketSize);
+                data = fileStreamHandler.Read(path, offset, Protocol.MaxPacketSize);
                 offset += Protocol.MaxPacketSize;
             }
 
-            NetworkDataHelper.Send(_socket, data);
+            NetworkDataHelper.Send(client, data);
             currentPart++;
         }
     }
@@ -96,15 +96,15 @@ public class FileCommsHandler
             if (currentPart == fileParts)
             {
                 var lastPartSize = (int)(fileSize - offset);
-                data = NetworkDataHelper.Receive(_socket, lastPartSize);
+                data = NetworkDataHelper.Receive(client, lastPartSize);
                 offset += lastPartSize;
             }
             else
             {
-                data = NetworkDataHelper.Receive(_socket, Protocol.MaxPacketSize);
+                data = NetworkDataHelper.Receive(client, Protocol.MaxPacketSize);
                 offset += Protocol.MaxPacketSize;
             }
-            _fileStreamHandler.Write(fileName, data);
+            fileStreamHandler.Write(fileName, data);
             currentPart++;
         }
     }

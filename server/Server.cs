@@ -12,10 +12,10 @@ namespace Server
             string ServerIp = settingsManager.ReadSettings(ServerConfig.ServerIPConfigKey);
             int ServerPort = int.Parse(settingsManager.ReadSettings(ServerConfig.ServerPortConfigKey));
 
-            SocketService socketService = new SocketService(ServerIp, ServerPort);
-            Controller controller = new Controller(socketService);
+            TcpService service = new TcpService(ServerIp, ServerPort);
+            Controller controller = new Controller(service);
 
-            socketService.Start();
+            service.Start();
         }
     }
 }

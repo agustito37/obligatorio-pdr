@@ -4,18 +4,18 @@ using Shared;
 
 public class Controller
 {
-    private SocketService socketService;
+    private TcpService service;
 
-    public Controller(SocketService socketService) {
-        this.socketService = socketService;
+    public Controller(TcpService service) {
+        this.service = service;
     }
 
     public void Connect() {
-        this.socketService.Connect();
+        this.service.Connect();
     }
 
     public void Disconnect() {
-        this.socketService.Disconnect();
+        this.service.Disconnect();
     }
 
     public int CreateUser(string username, string password)
@@ -26,7 +26,7 @@ public class Controller
             Password = password
         };
 
-        (int operation, string content) response = this.socketService.Request(Operations.UserCreate, Protocol.Encode(user, User.Encoder));
+        (int operation, string content) response = this.service.Request(Operations.UserCreate, Protocol.Encode(user, User.Encoder));
 
         if (response.operation == Operations.Error)
         {
@@ -45,7 +45,7 @@ public class Controller
             UserId=userId   
         };
 
-        (int operation, string content) response = this.socketService.Request(Operations.ProfileCreate, Protocol.Encode(profile, Profile.Encoder));
+        (int operation, string content) response = this.service.Request(Operations.ProfileCreate, Protocol.Encode(profile, Profile.Encoder));
 
         if (response.operation == Operations.Error)
         {
@@ -57,7 +57,7 @@ public class Controller
 
     public void AddPhoto(int id, string path)
     {
-        (int operation, string content) response = this.socketService.SendFile(Operations.ProfileUpdatePhoto, Protocol.EncodeString(id), path);
+        (int operation, string content) response = this.service.SendFile(Operations.ProfileUpdatePhoto, Protocol.EncodeString(id), path);
 
         if (response.operation == Operations.Error)
         {
@@ -67,7 +67,7 @@ public class Controller
 
     public string GetPhoto(int id)
     {
-        (int operation, string content) response = this.socketService.GetFile(Operations.ProfileGetPhoto, Protocol.EncodeString(id));
+        (int operation, string content) response = this.service.GetFile(Operations.ProfileGetPhoto, Protocol.EncodeString(id));
 
         if (response.operation == Operations.Error)
         {
@@ -79,7 +79,7 @@ public class Controller
 
     public List<Profile> GetProfiles(string filter)
     {
-        (int operation, string data) response = this.socketService.Request(Operations.ProfileGetList, Protocol.EncodeString(filter));
+        (int operation, string data) response = this.service.Request(Operations.ProfileGetList, Protocol.EncodeString(filter));
 
         List<Profile> profiles = new List<Profile>();
         if (response.operation != Operations.Error)
@@ -95,7 +95,7 @@ public class Controller
     }
 
     public Profile GetProfile(int userId) {
-        (int operation, string data) response = this.socketService.Request(Operations.ProfileGet, Protocol.EncodeString(userId));
+        (int operation, string data) response = this.service.Request(Operations.ProfileGet, Protocol.EncodeString(userId));
 
         Profile profile = new Profile();
         if (response.operation != Operations.Error)
@@ -118,7 +118,7 @@ public class Controller
             Text = message,
         };
 
-        (int operation, string content) response = this.socketService.Request(Operations.MessageCreate, Protocol.Encode(msg, Message.Encoder));
+        (int operation, string content) response = this.service.Request(Operations.MessageCreate, Protocol.Encode(msg, Message.Encoder));
 
         if (response.operation == Operations.Error)
         {
@@ -127,7 +127,7 @@ public class Controller
     }
 
     public List<Message> GetMessages(int userId) {
-        (int operation, string data) response = this.socketService.Request(Operations.MessageGetList, Protocol.EncodeString(userId));
+        (int operation, string data) response = this.service.Request(Operations.MessageGetList, Protocol.EncodeString(userId));
 
         List<Message> messages = new List<Message>();
         if (response.operation != Operations.Error)
