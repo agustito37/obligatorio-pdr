@@ -10,15 +10,15 @@ public class Controller
         this.service = service;
     }
 
-    public void Connect() {
-        this.service.Connect();
+    public async Task Connect() {
+        await this.service.Connect();
     }
 
     public void Disconnect() {
         this.service.Disconnect();
     }
 
-    public int CreateUser(string username, string password)
+    public async Task<int> CreateUser(string username, string password)
     {
         User user = new User() 
         {
@@ -26,7 +26,7 @@ public class Controller
             Password = password
         };
 
-        (int operation, string content) response = this.service.Request(Operations.UserCreate, Protocol.Encode(user, User.Encoder));
+        (int operation, string content) response = await this.service.Request(Operations.UserCreate, Protocol.Encode(user, User.Encoder));
 
         if (response.operation == Operations.Error)
         {
@@ -36,7 +36,7 @@ public class Controller
         return int.Parse(response.content);
     }
     
-    public int CreateProfile(int userId, string description, List<string> abilities)
+    public async Task<int> CreateProfile(int userId, string description, List<string> abilities)
     {
         Profile profile = new Profile()
         {
@@ -45,7 +45,7 @@ public class Controller
             UserId=userId   
         };
 
-        (int operation, string content) response = this.service.Request(Operations.ProfileCreate, Protocol.Encode(profile, Profile.Encoder));
+        (int operation, string content) response = await this.service.Request(Operations.ProfileCreate, Protocol.Encode(profile, Profile.Encoder));
 
         if (response.operation == Operations.Error)
         {
@@ -55,9 +55,9 @@ public class Controller
         return int.Parse(response.content);
     }
 
-    public void AddPhoto(int id, string path)
+    public async Task AddPhoto(int id, string path)
     {
-        (int operation, string content) response = this.service.SendFile(Operations.ProfileUpdatePhoto, Protocol.EncodeString(id), path);
+        (int operation, string content) response = await this.service.SendFile(Operations.ProfileUpdatePhoto, Protocol.EncodeString(id), path);
 
         if (response.operation == Operations.Error)
         {
@@ -65,9 +65,9 @@ public class Controller
         }
     }
 
-    public string GetPhoto(int id)
+    public async Task<string> GetPhoto(int id)
     {
-        (int operation, string content) response = this.service.GetFile(Operations.ProfileGetPhoto, Protocol.EncodeString(id));
+        (int operation, string content) response = await this.service.GetFile(Operations.ProfileGetPhoto, Protocol.EncodeString(id));
 
         if (response.operation == Operations.Error)
         {
@@ -77,9 +77,9 @@ public class Controller
         return response.content;
     }
 
-    public List<Profile> GetProfiles(string filter)
+    public async Task<List<Profile>> GetProfiles(string filter)
     {
-        (int operation, string data) response = this.service.Request(Operations.ProfileGetList, Protocol.EncodeString(filter));
+        (int operation, string data) response = await this.service.Request(Operations.ProfileGetList, Protocol.EncodeString(filter));
 
         List<Profile> profiles = new List<Profile>();
         if (response.operation != Operations.Error)
@@ -94,8 +94,8 @@ public class Controller
         return profiles;
     }
 
-    public Profile GetProfile(int userId) {
-        (int operation, string data) response = this.service.Request(Operations.ProfileGet, Protocol.EncodeString(userId));
+    public async Task<Profile> GetProfile(int userId) {
+        (int operation, string data) response = await this.service.Request(Operations.ProfileGet, Protocol.EncodeString(userId));
 
         Profile profile = new Profile();
         if (response.operation != Operations.Error)
@@ -110,7 +110,7 @@ public class Controller
         return profile;
     }
 
-    public void SendMessage(int fromUserId, int toUserId, string message)
+    public async Task SendMessage(int fromUserId, int toUserId, string message)
     {
         Message msg = new() {
             FromUserId = fromUserId,
@@ -118,7 +118,7 @@ public class Controller
             Text = message,
         };
 
-        (int operation, string content) response = this.service.Request(Operations.MessageCreate, Protocol.Encode(msg, Message.Encoder));
+        (int operation, string content) response = await this.service.Request(Operations.MessageCreate, Protocol.Encode(msg, Message.Encoder));
 
         if (response.operation == Operations.Error)
         {
@@ -126,8 +126,8 @@ public class Controller
         }
     }
 
-    public List<Message> GetMessages(int userId) {
-        (int operation, string data) response = this.service.Request(Operations.MessageGetList, Protocol.EncodeString(userId));
+    public async Task<List<Message>> GetMessages(int userId) {
+        (int operation, string data) response = await this.service.Request(Operations.MessageGetList, Protocol.EncodeString(userId));
 
         List<Message> messages = new List<Message>();
         if (response.operation != Operations.Error)
@@ -141,5 +141,4 @@ public class Controller
 
         return messages;
     }
-
 }

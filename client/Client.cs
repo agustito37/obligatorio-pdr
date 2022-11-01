@@ -7,15 +7,16 @@ public class Client
 
     private static Controller? controller;
 
-    private static void Connect() {
-        controller!.Connect();
+    private static async Task Connect() {
+        await controller!.Connect();
     }
 
-    private static void Disconnect() {
+    // to keep the same signature for all methods even if is not a Task
+    private static async Task Disconnect() {
         controller!.Disconnect();
     }
 
-    private static void CreateUser() {
+    private static async Task CreateUser() {
         Console.WriteLine("Inserte el nombre de usuario");
         string username = ConsoleHelpers.RequestNonEmptyText("No puedes dejar vacío este campo");
 
@@ -24,7 +25,7 @@ public class Client
             
         try
         {
-            int id = controller!.CreateUser(username, password);
+            int id = await controller!.CreateUser(username, password);
             Console.WriteLine("Usuario insertado con el id: {0}", id);
         }
         catch (Exception e)
@@ -33,7 +34,7 @@ public class Client
         }
     }
 
-    private static void CreateProfile() {
+    private static async Task CreateProfile() {
         
         Console.WriteLine("Inserte el Id del usuario ");
         int userId = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
@@ -55,7 +56,7 @@ public class Client
 
         try
         {
-            int id = controller!.CreateProfile(userId,  description, abilities);
+            int id = await controller!.CreateProfile(userId,  description, abilities);
             Console.WriteLine("Perfil insertado con el id: {0}", id);
         }
         catch (Exception e)
@@ -64,7 +65,7 @@ public class Client
         }
     }
 
-    private static void AddPhoto() {
+    private static async Task AddPhoto() {
         Console.WriteLine("Inserte id de usuario");
         int id = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
@@ -73,7 +74,7 @@ public class Client
 
         try
         {
-            controller!.AddPhoto(id, path);
+            await controller!.AddPhoto(id, path);
 
             Console.WriteLine("Foto actualizada");
         }
@@ -83,14 +84,14 @@ public class Client
         }
     }
 
-    private static void GetPhoto()
+    private static async Task GetPhoto()
     {
         Console.WriteLine("Inserte id de usuario");
         int id = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
         try
         {
-            string fileName = controller!.GetPhoto(id);
+            string fileName = await controller!.GetPhoto(id);
 
             Console.WriteLine("Nombre foto perfil: " + fileName);
         }
@@ -100,7 +101,7 @@ public class Client
         }
     }
 
-    private static void GetProfiles() {
+    private static async Task GetProfiles() {
         Console.WriteLine("Buscar perfil  por:");
         Console.WriteLine("1) Descripcion");
         Console.WriteLine("2) Habilidad");
@@ -128,7 +129,7 @@ public class Client
 
         try
         {
-            List<Profile> profiles = controller!.GetProfiles(filter);
+            List<Profile> profiles = await controller!.GetProfiles(filter);
 
             Console.WriteLine("--- Perfiles ---");
             foreach (Profile profile in profiles)
@@ -147,13 +148,13 @@ public class Client
         }
     }
 
-    private static void GetProfile() {
+    private static async Task GetProfile() {
         Console.Write("Ingrese el Id del usuario:");
         int userId = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
         try
         {
-            Profile profile = controller!.GetProfile(userId);
+            Profile profile = await controller!.GetProfile(userId);
 
             Console.WriteLine("--- Perfil ---");
             Console.WriteLine("Id: " + profile.Id);
@@ -169,7 +170,7 @@ public class Client
         }
     }
 
-    private static void SendMessage() {
+    private static async Task SendMessage() {
         Console.WriteLine("Ingrese los datos del mensaje");
 
         Console.Write("Id usuario que envia: ");
@@ -183,7 +184,7 @@ public class Client
 
         try
         {
-            controller!.SendMessage(fromUserId, toUserId, message);
+            await controller!.SendMessage(fromUserId, toUserId, message);
         }
         catch (Exception e)
         {
@@ -192,13 +193,13 @@ public class Client
         
     }
 
-    private static void GetMessages() {
+    private static async Task GetMessages() {
         Console.Write("Ingrese el Id de usuario: ");
         int userId = ConsoleHelpers.RequestInt("No puedes dejar vacío este campo");
 
         try
         {
-            List<Message> messages = controller!.GetMessages(userId);
+            List<Message> messages = await controller!.GetMessages(userId);
 
             Console.WriteLine("--- Mensajes ---");
             foreach (Message message in messages)
@@ -218,7 +219,7 @@ public class Client
         }
     }
 
-    public static void Main() {
+    public static async Task Main() {
         Console.WriteLine("Iniciando cliente...");
 
         string ClientIp = settingsManager.ReadSettings(ServerConfig.ClientIPConfigKey);
@@ -231,7 +232,7 @@ public class Client
         Menu mainMenu = new()
         {
             Title = "Menu principal",
-            Options = new List<(string, Delegate)> {
+            Options = new List<(string, Func<Task>)> {
                 ("Conectarse a servidor", Connect),
                 ("Alta usuario", CreateUser),
                 ("Alta perfil de trabajo", CreateProfile),
@@ -244,6 +245,6 @@ public class Client
                 ("Desconectarse de servidor", Disconnect),
             }
         };
-        mainMenu.Show();
+        await mainMenu.Show();
     }
 }

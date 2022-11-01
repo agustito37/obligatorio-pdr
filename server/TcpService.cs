@@ -18,7 +18,7 @@ public class TcpService
         this.port = port;
     }
 
-    public Action<TcpClient, int, string> RequestHandler { get; set; } = (client, operation, request) => { };
+    public Func<TcpClient, int, string, Task>? RequestHandler { get; set; }
 
     public void Start() {
         // create listener
@@ -29,7 +29,7 @@ public class TcpService
         // listen to connections
         this.server.Start(100);
         Console.WriteLine("Esperando conexiones...");
-        new Thread(() => this.AcceptConnections()).Start();
+        new Task(async () => await this.AcceptConnections()).Start();
 
         // close on command
         CloseServerOnCommand();
@@ -57,14 +57,14 @@ public class TcpService
         this.server!.Stop();
     }
 
-    private void AcceptConnections() {
+    private async Task AcceptConnections() {
         try
         {
             while (true)
             {
-                TcpClient client = this.server!.AcceptTcpClient();
+                TcpClient client = await this.server!.AcceptTcpClientAsync();
                 Console.WriteLine("Nueva conexión aceptada");
-                new Thread(() => this.ManageClient(client)).Start();
+                new Task(async () => await this.ManageClient(client)).Start();
             }
         }
         catch (SocketException)
@@ -73,21 +73,21 @@ public class TcpService
         }
     }
 
-    private void ManageClient(TcpClient client) {
+    private async Task ManageClient(TcpClient client) {
         try
         {
             this.clients.Add(client);
             while (client.Connected)
             {
                 // receive header
-                byte[] data = NetworkDataHelper.Receive(client, Protocol.HeaderLen);
+                byte[] data = await NetworkDataHelper.Receive(client, Protocol.HeaderLen);
                 (int operation, int contentLen) header = Protocol.DecodeHeader(data);
 
                 // receive content
-                data = NetworkDataHelper.Receive(client, header.contentLen);
+                data = await NetworkDataHelper.Receive(client, header.contentLen);
 
                 // process request 
-                this.RequestHandler(client, header.operation, Protocol.DecodeString(data));
+                await this.RequestHandler!(client, header.operation, Protocol.DecodeString(data));
             }
         }
         catch (SocketException)
@@ -96,17 +96,17 @@ public class TcpService
         }
     }
 
-    public void Response(TcpClient client, int operation, byte[]? responseData)
+    public async Task Response(TcpClient client, int operation, byte[]? responseData)
     {
         try
         {
             byte[] sentData = responseData ?? new byte[0];
 
             // send response headers
-            NetworkDataHelper.Send(client, Protocol.EncodeHeader(operation, sentData));
+            await NetworkDataHelper.Send(client, Protocol.EncodeHeader(operation, sentData));
 
             // send response content
-            NetworkDataHelper.Send(client, sentData);
+            await NetworkDataHelper.Send(client, sentData);
         }
         catch (SocketException)
         {
@@ -114,15 +114,15 @@ public class TcpService
         }
     }
 
-    public string ReceiveFile(TcpClient client)
+    public async Task<string> ReceiveFile(TcpClient client)
     {
         FileCommsHandler fileCommsHandler = new FileCommsHandler(client);
-        return fileCommsHandler.ReceiveFile();
+        return await fileCommsHandler.ReceiveFile();
     }
 
-    public void SendFile(TcpClient client, string path)
+    public async Task SendFile(TcpClient client, string path)
     {
         FileCommsHandler fileCommsHandler = new FileCommsHandler(client);
-        fileCommsHandler.SendFile(path);
+        await fileCommsHandler.SendFile(path);
     }
 }

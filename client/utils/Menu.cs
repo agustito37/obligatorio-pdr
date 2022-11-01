@@ -1,7 +1,7 @@
 ﻿public class Menu
 {
     public string? Title { get; set; }
-    public List<(string key, Delegate operation)>? Options { get; set; }
+    public List<(string key, Func<Task> operation)>? Options { get; set; }
     private readonly string EXIT_KEY = "salir";
 
     private string getOptionsMessage()
@@ -17,7 +17,7 @@
         return optionsMessage;
     }
 
-    private string ReadOption()
+    private async Task<string> ReadOption()
     {
         while (true)
         {
@@ -27,7 +27,7 @@
                 return input;
             }
 
-            Delegate option;
+            Func<Task> option;
             try
             {
                 int indexOption = int.Parse(input) - 1;
@@ -41,12 +41,12 @@
                 continue;
             }
 
-            option.DynamicInvoke();
+            await option();
             return input;
         }
     }
 
-    public void Show()
+    public async Task Show()
     {
         if (Options == null)
         {
@@ -61,7 +61,7 @@
                 Console.WriteLine("\n{0}", Title);
             }
             Console.WriteLine(getOptionsMessage());
-            input = ReadOption();
+            input = await ReadOption();
         } while (input != EXIT_KEY);
     }
 }

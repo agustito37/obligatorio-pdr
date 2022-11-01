@@ -18,7 +18,7 @@ public class TcpService
         this.remotePort = remotePort;
     }
 
-    public void Connect() {
+    public async Task Connect() {
         if (this.client == null || !this.client.Connected) {
             try
             {
@@ -27,7 +27,7 @@ public class TcpService
                 this.client = new TcpClient(localEndPoint);
 
                 IPEndPoint remoteEndpoint = new IPEndPoint(IPAddress.Parse(this.remoteIp), this.remotePort);
-                this.client!.Connect(remoteEndpoint);
+                await this.client!.ConnectAsync(remoteEndpoint);
             }
             catch (SocketException)
             {
@@ -53,7 +53,7 @@ public class TcpService
         }
     }
 
-    public (int operation, string response) Request(int operation, byte[]? encodedData) {
+    public async Task<(int operation, string response)> Request(int operation, byte[]? encodedData) {
         if (this.client != null && this.client.Connected)
         {
             try
@@ -61,20 +61,20 @@ public class TcpService
                 byte[] sentData = encodedData ?? new byte[0];
 
                 // send headers
-                NetworkDataHelper.Send(this.client, Protocol.EncodeHeader(operation, sentData));
+                await NetworkDataHelper.Send(this.client, Protocol.EncodeHeader(operation, sentData));
 
                 // send content
-                NetworkDataHelper.Send(this.client, sentData);
+                await NetworkDataHelper.Send(this.client, sentData);
 
                 // receive response header
-                byte[] responseData = NetworkDataHelper.Receive(this.client, Protocol.HeaderLen);
+                byte[] responseData = await NetworkDataHelper.Receive(this.client, Protocol.HeaderLen);
                 (int responseOperation, int responseContenLen) header = Protocol.DecodeHeader(responseData);
 
                 // receive response content
                 // that could be:
                 // OK response, could have content or not
                 // ERROR response, description of error in content
-                responseData = NetworkDataHelper.Receive(this.client, header.responseContenLen);
+                responseData = await NetworkDataHelper.Receive(this.client, header.responseContenLen);
 
                 return (header.responseOperation, Protocol.DecodeString(responseData));
             }
@@ -88,34 +88,34 @@ public class TcpService
         }
     }
 
-    public (int operation, string response) SendFile(int operation, byte[]? encodedData, string path)
+    public async Task<(int operation, string response)> SendFile(int operation, byte[]? encodedData, string path)
     {
         if (!FileHandler.FileExists(path)) {
             throw new Exception("Archivo no existente");
         }
 
         // make a control request
-        (int responseOperation, string responseData) header = this.Request(operation, encodedData);
+        (int responseOperation, string responseData) header = await this.Request(operation, encodedData);
 
         // if response is ok, send file stream
         if (header.responseOperation == Operations.Ok)
         {
             FileCommsHandler fileCommsHandler = new FileCommsHandler(this.client!);
-            fileCommsHandler.SendFile(path);
+            await fileCommsHandler.SendFile(path);
         }
 
         return (header.responseOperation, header.responseData);
     }
 
-    public (int operation, string fileName) GetFile(int operation, byte[]? encodedData)
+    public async Task<(int operation, string fileName)> GetFile(int operation, byte[]? encodedData)
     {
         // make a control request
-        (int responseOperation, string responseData) header = this.Request(operation, encodedData);
+        (int responseOperation, string responseData) header = await this.Request(operation, encodedData);
 
         // if response is ok, receive file stream
         if (header.responseOperation == Operations.Ok) {
             FileCommsHandler fileCommsHandler = new FileCommsHandler(this.client!);
-            fileCommsHandler.ReceiveFile();
+            await fileCommsHandler.ReceiveFile();
         }
 
         return (header.responseOperation, header.responseData);

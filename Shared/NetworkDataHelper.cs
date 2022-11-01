@@ -4,13 +4,13 @@ namespace Shared;
 
 public class NetworkDataHelper
 {
-    public static void Send(TcpClient client, byte[] data)
+    public static async Task Send(TcpClient client, byte[] data)
     {
         int size = data.Length;
         NetworkStream stream = client.GetStream();
         try
         {
-            stream.Write(data, 0, size);
+            await stream.WriteAsync(data, 0, size);
         }
         catch (Exception)
         {
@@ -18,7 +18,7 @@ public class NetworkDataHelper
         }
     }
 
-    public static byte[] Receive(TcpClient client, int limit)
+    public static async Task<byte[]> Receive(TcpClient client, int limit)
     {
         byte[] data = new byte[limit];
         int offset = 0;
@@ -27,7 +27,7 @@ public class NetworkDataHelper
         {
             try
             {
-                int received = stream.Read(data, offset, limit - offset);
+                int received = await stream.ReadAsync(data, offset, limit - offset);
                 if (received == 0)
                 {
                     throw new SocketException();
