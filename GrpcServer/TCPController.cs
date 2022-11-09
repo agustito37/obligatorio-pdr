@@ -4,11 +4,11 @@ using System.Net.Sockets;
 using System.Text;
 using Shared;
 
-public class Controller
+public class TCPController
 {
     private TcpService service;
 
-    public Controller(TcpService tcpService) {
+    public TCPController(TcpService tcpService) {
         this.service = tcpService;
         this.service.RequestHandler = async (TcpClient client, int operation, string data) =>
         {

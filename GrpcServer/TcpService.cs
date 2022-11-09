@@ -30,31 +30,6 @@ public class TcpService
         this.server.Start(100);
         Console.WriteLine("Esperando conexiones...");
         new Task(async () => await this.AcceptConnections()).Start();
-
-        // close on command
-        CloseServerOnCommand();
-    }
-
-    private void CloseServerOnCommand() {
-        string input = "";
-        while (input != "salir")
-        {
-            Console.WriteLine("Ingrese 'salir' para cerrar el servidor");
-            input = ConsoleHelpers.RequestNonEmptyText("El comando no puede estar vacío");
-        }
-
-        // close client listener connections
-        foreach (TcpClient client in this.clients)
-        {
-            if (client.Connected)
-            {
-                client.GetStream().Close();
-                client.Close();
-            }
-        }
-
-        // close server listener
-        this.server!.Stop();
     }
 
     private async Task AcceptConnections() {
