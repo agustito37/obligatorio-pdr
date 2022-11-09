@@ -1,4 +1,7 @@
-﻿class Administrator {
+﻿using Administration;
+using Grpc.Net.Client;
+
+class Administrator {
     static void Main(string[] args) {
         var builder = WebApplication.CreateBuilder(args);
 
