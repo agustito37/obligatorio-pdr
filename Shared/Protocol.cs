@@ -3,7 +3,8 @@ using System.Text;
 
 namespace Shared;
 
-public class Operations {
+public class Operations
+{
     public const int Ok = 0;
     public const int Error = 1;
     public const int UserCreate = 2;
@@ -105,9 +106,11 @@ public class Protocol
     public static byte[] EncodeList<T>(List<T> entityList, Func<T, string> encoder)
     {
         string encoded = "";
-        for (int i = 0; i < entityList.Count; i++) {
+        for (int i = 0; i < entityList.Count; i++)
+        {
             encoded += encoder(entityList[i]);
-            if (i != entityList.Count - 1) {
+            if (i != entityList.Count - 1)
+            {
                 encoded += Protocol.ListSeparator;
             }
         }
@@ -121,10 +124,12 @@ public class Protocol
 
     public static List<T> DecodeList<T>(string encodedData, Func<string, T> decoder)
     {
-        List<T> entityList = new ();
+        List<T> entityList = new();
 
-        if (encodedData != "") {
-            foreach (string msg in encodedData.Split(Protocol.ListSeparator)) {
+        if (encodedData != "")
+        {
+            foreach (string msg in encodedData.Split(Protocol.ListSeparator))
+            {
                 entityList.Add(decoder(msg));
             }
         }
@@ -132,15 +137,18 @@ public class Protocol
         return entityList;
     }
 
-    private static byte[] FillBytes(byte[] data, int len) {
+    private static byte[] FillBytes(byte[] data, int len)
+    {
         byte[] bytes = new byte[len];
-        for (int x = 0; x < len; x++) {
+        for (int x = 0; x < len; x++)
+        {
             bytes[x] = data[x];
         }
         return bytes;
     }
 
-    public static byte[] EncodeHeader(int operation, byte[] content) {
+    public static byte[] EncodeHeader(int operation, byte[] content)
+    {
         byte[] operationBytes = FillBytes(BitConverter.GetBytes(operation), OperationLen);
         byte[] lengthBytes = FillBytes(BitConverter.GetBytes(content.Length), ContentLengthLen);
 

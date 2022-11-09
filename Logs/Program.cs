@@ -1,4 +1,6 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using Logs;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
@@ -22,5 +24,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+new QueueServer("localhost");
 
+app.Run();
