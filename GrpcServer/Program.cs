@@ -17,7 +17,7 @@ class GrpcService {
         int ServerPort = int.Parse(settingsManager.ReadSettings(ServerConfig.ServerPortConfigKey));
         TcpService service = new TcpService(ServerIp, ServerPort);
 
-        TCPController controller = new TCPController(service);
+        TcpController controller = new TcpController(service);
 
         service.Start();
     }
