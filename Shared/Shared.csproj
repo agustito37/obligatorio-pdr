@@ -12,7 +12,6 @@
     <None Remove="stream\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="domain\" />
     <Folder Include="stream\" />
   </ItemGroup>
   <ItemGroup>

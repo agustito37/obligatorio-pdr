@@ -2,16 +2,22 @@
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Shared;
 
-class GrpcService {
-    static readonly SettingsManager settingsManager = new SettingsManager();
+internal class GrpcService
+{
+    private static readonly SettingsManager settingsManager = new SettingsManager();
 
-    static void Main(string[] args) {
+    private static void Main(string[] args)
+    {
+        new GrpcServer.Logs.Logger();
+        GrpcServer.Logs.Logger.Instance.WriteMessage("Starting server");
         startTCPServer();
         startGRPCServer(args);
     }
 
-    static void startTCPServer() {
+    private static void startTCPServer()
+    {
         Console.WriteLine("Iniciando TCP server...");
+        GrpcServer.Logs.Logger.Instance.WriteMessage("Iniciando TCP server...");
 
         string ServerIp = settingsManager.ReadSettings(ServerConfig.ServerIPConfigKey);
         int ServerPort = int.Parse(settingsManager.ReadSettings(ServerConfig.ServerPortConfigKey));
@@ -22,8 +28,10 @@ class GrpcService {
         service.Start();
     }
 
-    static void startGRPCServer(string[] args) {
+    private static void startGRPCServer(string[] args)
+    {
         Console.WriteLine("Iniciando GRPC server...");
+        GrpcServer.Logs.Logger.Instance.WriteMessage("Iniciando GRPC server...");
 
         var builder = WebApplication.CreateBuilder(args);
 
