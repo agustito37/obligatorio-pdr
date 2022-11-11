@@ -1,0 +1,40 @@
+﻿
+syntax = "proto3";
+
+option csharp_namespace = "GrpcServer";
+
+package profiles;
+
+service Profiles {
+    rpc Add (AddProfileRequest) returns (ProfileResponse);
+    rpc Update (UpdateProfileRequest) returns (ProfileResponse);
+    rpc Remove (RemoveProfileRequest) returns (ProfileResponse);
+    rpc RemovePhoto (RemoveProfilePhotoRequest) returns (ProfileResponse);
+}
+
+message AddProfileRequest {
+    int32 userId = 1;
+    string description = 2;
+    repeated string abilities = 3;
+}
+
+message UpdateProfileRequest {
+    int32 id = 1;
+    int32 userId = 2;
+    string description = 3;
+    repeated string abilities = 4;
+}
+
+message RemoveProfileRequest {
+    int32 id = 1;
+}
+
+message RemoveProfilePhotoRequest {
+    int32 id = 1;
+}
+
+message ProfileResponse {
+    int32 code = 1;
+    string message = 2;
+}
+

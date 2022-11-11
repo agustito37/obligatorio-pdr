@@ -21,13 +21,14 @@
     <None Remove="Grpc.Net.Client" />
     <None Remove="Grpc.Tools" />
     <None Remove="Protos\" />
-    <None Remove="Protos\greet.proto" />
+    <None Remove="Protos\profiles.proto" />
+    <None Remove="Protos\users.proto" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Protos\" />
   </ItemGroup>
   <ItemGroup>
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Client">
-    </Protobuf>
+    <Protobuf Include="Protos\profiles.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\users.proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>

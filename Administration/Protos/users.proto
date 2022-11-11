@@ -1,0 +1,33 @@
+﻿
+syntax = "proto3";
+
+option csharp_namespace = "Administration";
+
+package users;
+
+service Users {
+    rpc Add (AddUserRequest) returns (UserResponse);
+    rpc Update (UpdateUserRequest) returns (UserResponse);
+    rpc Remove (RemoveUserRequest) returns (UserResponse);
+}
+
+message AddUserRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message UpdateUserRequest {
+    int32 id = 1;
+    string username = 2;
+    string password = 3;
+}
+
+message RemoveUserRequest {
+    int32 id = 1;
+}
+
+message UserResponse {
+    int32 code = 1;
+    string message = 2;
+}
+
