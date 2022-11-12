@@ -20,7 +20,7 @@ public class ProfilesService : Profiles.ProfilesBase
         Profile? foundProfile = profiles.Find((p) => p.UserId == request.UserId);
         if (foundProfile != null) {
             message = "El usuario ya tiene un profile asignado";
-            Logs.Logger.Instance.WriteError(message);
+            Logs.Logger.Instance.WriteWarning(message);
             return Task.FromResult(new ProfileResponse
             {
                 Code = 403,
@@ -52,7 +52,7 @@ public class ProfilesService : Profiles.ProfilesBase
         if (foundProfile == null)
         {
             message = "El perfil no existe";
-            Logs.Logger.Instance.WriteError(message);
+            Logs.Logger.Instance.WriteWarning(message);
             return Task.FromResult(new ProfileResponse
             {
                 Code = 404,
@@ -86,7 +86,7 @@ public class ProfilesService : Profiles.ProfilesBase
         if (foundProfile == null)
         {
             message = "El perfil no existe";
-            Logs.Logger.Instance.WriteError(message);
+            Logs.Logger.Instance.WriteWarning(message);
             return Task.FromResult(new ProfileResponse
             {
                 Code = 404,
@@ -131,7 +131,7 @@ public class ProfilesService : Profiles.ProfilesBase
         if (foundProfile == null)
         {
             message = "El perfil no existe";
-            Logs.Logger.Instance.WriteError(message);
+            Logs.Logger.Instance.WriteWarning(message);
             return Task.FromResult(new ProfileResponse
             {
                 Code = 404,

@@ -22,7 +22,7 @@ public class UsersService : Users.UsersBase
         if (foundUser != null)
         {
             message = "Ya existe un usuario con ese nombre de usuario";
-            Logs.Logger.Instance.WriteError(message);
+            Logs.Logger.Instance.WriteWarning(message);
             return Task.FromResult(new UserResponse
             {
                 Code = 403,
@@ -54,7 +54,7 @@ public class UsersService : Users.UsersBase
         if (foundUser == null)
         {
             message = "El usuario no existe";
-            Logs.Logger.Instance.WriteError(message);
+            Logs.Logger.Instance.WriteWarning(message);
             return Task.FromResult(new UserResponse
             {
                 Code = 404,
@@ -87,7 +87,7 @@ public class UsersService : Users.UsersBase
         if (foundUser == null)
         {
             message = "El usuario no existe";
-            Logs.Logger.Instance.WriteError(message);
+            Logs.Logger.Instance.WriteWarning(message);
             return Task.FromResult(new UserResponse
             {
                 Code = 404,
