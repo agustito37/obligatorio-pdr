@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using GrpcServer;
+using Shared;
 
 public sealed class Persistence
 {
@@ -106,6 +107,36 @@ public sealed class Persistence
         return user.Id;
     }
 
+    public void UpdateUser(User user)
+    {
+        lock (this.users)
+        {
+            User? foundUser = this.users.Find((u) => u.Username == user.Username);
+            if (foundUser != null)
+            {
+                foundUser.Username = user.Username;
+                foundUser.Password = user.Password;
+            }
+        }
+    }
+
+    public void RemoveUser(User user)
+    {
+        lock (this.users)
+        {
+            User? foundUser = this.users.Find((u) => u.Username == user.Username);
+            if (foundUser != null)
+            {
+                this.users.Remove(foundUser);
+
+                Profile? foundProfile = this.profiles.Find((p) => p.UserId == foundUser.Id);
+                if (foundProfile != null) {
+                    RemoveProfile(foundProfile);
+                }
+            }
+        }
+    }
+
     public List<Profile> GetProfiles(string filter, string value)
     {
         lock (this.profiles)
@@ -157,7 +188,7 @@ public sealed class Persistence
         lock (this.profiles)
         {
             // unique UserId constraint
-            Profile? foundProfile = this.profiles.Find((u) => u.UserId == profile.UserId);
+            Profile? foundProfile = this.profiles.Find((p) => p.UserId == profile.UserId);
             if (foundProfile == null)
             {
                 this.uid += 1;
@@ -168,13 +199,51 @@ public sealed class Persistence
         return profile.Id;
     }
 
+    public void UpdateProfile(Profile profile)
+    {
+        lock (this.profiles)
+        {
+            Profile? foundProfile = this.profiles.Find((p) => p.UserId == profile.UserId);
+            if (foundProfile != null)
+            {
+                foundProfile.UserId = profile.UserId;
+                foundProfile.Description = profile.Description;
+                foundProfile.Abilites = profile.Abilites;
+            }
+        }
+    }
+
+    public void RemoveProfile(Profile profile)
+    {
+        lock (this.profiles)
+        {
+            Profile? foundProfile = this.profiles.Find((p) => p.UserId == profile.UserId);
+            if (foundProfile != null)
+            {
+                this.profiles.Remove(foundProfile);
+            }
+        }
+    }
+
     public void SetProfilePhoto(int id, string path)
     {
         lock (this.profiles)
         {
-            Profile? foundProfile = this.profiles.Find((u) => u.Id == id);
+            Profile? foundProfile = this.profiles.Find((p) => p.Id == id);
             if (foundProfile != null) {
                 foundProfile.ImagePath = path;
+            }
+        }
+    }
+
+    public void RemoveProfilePhoto(int id)
+    {
+        lock (this.profiles)
+        {
+            Profile? foundProfile = this.profiles.Find((p) => p.Id == id);
+            if (foundProfile != null)
+            {
+                foundProfile.ImagePath = "";
             }
         }
     }

@@ -32,4 +32,14 @@ public static class FileHandler
 
         throw new Exception("File does not exist");
     }
+
+    public static void RemoveFile(string path)
+    {
+        if (FileExists(path))
+        {
+            File.Delete(path);
+        }
+
+        throw new Exception("File does not exist");
+    }
 }
