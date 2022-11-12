@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf;
+using Grpc.Core;
 using GrpcServer;
 using Shared;
 
@@ -14,14 +15,18 @@ public class UsersService : Users.UsersBase
 
     public override Task<UserResponse> Add(AddUserRequest request, ServerCallContext context)
     {
+        string message = "";
+
         List<User> users = Persistence.Instance.GetUsers();
         User? foundUser = users.Find((u) => u.Username == request.Username);
         if (foundUser != null)
         {
+            message = "Ya existe un usuario con ese nombre de usuario";
+            Logs.Logger.Instance.WriteError(message);
             return Task.FromResult(new UserResponse
             {
                 Code = 403,
-                Message = "Ya existe un usuario con ese nombre de usuario"
+                Message = message
             });
         }
 
@@ -31,23 +36,29 @@ public class UsersService : Users.UsersBase
             Password = request.Password
         });
 
+        message = "Agregado correctamente";
+        Logs.Logger.Instance.WriteMessage(message);
         return Task.FromResult(new UserResponse
         {
             Code = 1,
-            Message = "Agregado correctamente"
+            Message = message
         });
     }
 
     public override Task<UserResponse> Update(UpdateUserRequest request, ServerCallContext context)
     {
+        string message = "";
+
         List<User> users = Persistence.Instance.GetUsers();
         User? foundUser= users.Find((u) => u.Id == request.Id);
         if (foundUser == null)
         {
+            message = "El usuario no existe";
+            Logs.Logger.Instance.WriteError(message);
             return Task.FromResult(new UserResponse
             {
                 Code = 404,
-                Message = "El usuario no existe"
+                Message = message
             });
         }
 
@@ -58,23 +69,29 @@ public class UsersService : Users.UsersBase
             Password = request.Password
         });
 
+        message = "Actualizado correctamente";
+        Logs.Logger.Instance.WriteMessage(message);
         return Task.FromResult(new UserResponse
         {
             Code = 200,
-            Message = "Actualizado correctamente"
+            Message = message
         });
     }
 
     public override Task<UserResponse> Remove(RemoveUserRequest request, ServerCallContext context)
     {
+        string message = "";
+
         List<User> users = Persistence.Instance.GetUsers();
         User? foundUser = users.Find((u) => u.Id == request.Id);
         if (foundUser == null)
         {
+            message = "El usuario no existe";
+            Logs.Logger.Instance.WriteError(message);
             return Task.FromResult(new UserResponse
             {
                 Code = 404,
-                Message = "El usuario no existe"
+                Message = message
             });
         }
 
@@ -91,10 +108,12 @@ public class UsersService : Users.UsersBase
             }
             catch (Exception)
             {
+                message = "Error al eliminar foto";
+                Logs.Logger.Instance.WriteError(message);
                 return Task.FromResult(new UserResponse
                 {
                     Code = 500,
-                    Message = "Error al eliminar foto"
+                    Message = message
                 });
             }
 
@@ -103,10 +122,12 @@ public class UsersService : Users.UsersBase
 
         Persistence.Instance.RemoveUser(foundUser);
 
+        message = "Actualizado correctamente";
+        Logs.Logger.Instance.WriteMessage(message);
         return Task.FromResult(new UserResponse
         {
             Code = 200,
-            Message = "Actualizado correctamente"
+            Message = message
         });
     }
 }
