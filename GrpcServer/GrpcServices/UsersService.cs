@@ -2,31 +2,26 @@
 using Grpc.Core;
 using GrpcServer;
 using Shared;
+using GrpcServer.Logs;
 
 namespace GrpcServer.Services;
 
 public class UsersService : Users.UsersBase
 {
-    private readonly ILogger<UsersService> _logger;
-    public UsersService(ILogger<UsersService> logger)
-    {
-        _logger = logger;
-    }
-
     public override Task<UserResponse> Add(AddUserRequest request, ServerCallContext context)
     {
-        string message = "";
+        string resultMessage = "";
 
         List<User> users = Persistence.Instance.GetUsers();
         User? foundUser = users.Find((u) => u.Username == request.Username);
         if (foundUser != null)
         {
-            message = "Ya existe un usuario con ese nombre de usuario";
-            Logs.Logger.Instance.WriteWarning(message);
+            resultMessage = "Ya existe un usuario con ese nombre de usuario";
+            Logger.Instance.WriteWarning(resultMessage);
             return Task.FromResult(new UserResponse
             {
                 Code = 403,
-                Message = message
+                Message = resultMessage
             });
         }
 
@@ -36,29 +31,29 @@ public class UsersService : Users.UsersBase
             Password = request.Password
         });
 
-        message = "Agregado correctamente";
-        Logs.Logger.Instance.WriteMessage(message);
+        resultMessage = "Agregado correctamente";
+        Logger.Instance.WriteMessage(resultMessage);
         return Task.FromResult(new UserResponse
         {
             Code = 1,
-            Message = message
+            Message = resultMessage
         });
     }
 
     public override Task<UserResponse> Update(UpdateUserRequest request, ServerCallContext context)
     {
-        string message = "";
+        string resultMessage = "";
 
         List<User> users = Persistence.Instance.GetUsers();
         User? foundUser= users.Find((u) => u.Id == request.Id);
         if (foundUser == null)
         {
-            message = "El usuario no existe";
-            Logs.Logger.Instance.WriteWarning(message);
+            resultMessage = "El usuario no existe";
+            Logger.Instance.WriteWarning(resultMessage);
             return Task.FromResult(new UserResponse
             {
                 Code = 404,
-                Message = message
+                Message = resultMessage
             });
         }
 
@@ -69,29 +64,29 @@ public class UsersService : Users.UsersBase
             Password = request.Password
         });
 
-        message = "Actualizado correctamente";
-        Logs.Logger.Instance.WriteMessage(message);
+        resultMessage = "Actualizado correctamente";
+        Logger.Instance.WriteMessage(resultMessage);
         return Task.FromResult(new UserResponse
         {
             Code = 200,
-            Message = message
+            Message = resultMessage
         });
     }
 
     public override Task<UserResponse> Remove(RemoveUserRequest request, ServerCallContext context)
     {
-        string message = "";
+        string resultMessage = "";
 
         List<User> users = Persistence.Instance.GetUsers();
         User? foundUser = users.Find((u) => u.Id == request.Id);
         if (foundUser == null)
         {
-            message = "El usuario no existe";
-            Logs.Logger.Instance.WriteWarning(message);
+            resultMessage = "El usuario no existe";
+            Logger.Instance.WriteWarning(resultMessage);
             return Task.FromResult(new UserResponse
             {
                 Code = 404,
-                Message = message
+                Message = resultMessage
             });
         }
 
@@ -108,12 +103,12 @@ public class UsersService : Users.UsersBase
             }
             catch (Exception)
             {
-                message = "Error al eliminar foto";
-                Logs.Logger.Instance.WriteError(message);
+                resultMessage = "Error al eliminar foto";
+                Logger.Instance.WriteError(resultMessage);
                 return Task.FromResult(new UserResponse
                 {
                     Code = 500,
-                    Message = message
+                    Message = resultMessage
                 });
             }
 
@@ -122,12 +117,12 @@ public class UsersService : Users.UsersBase
 
         Persistence.Instance.RemoveUser(foundUser);
 
-        message = "Actualizado correctamente";
-        Logs.Logger.Instance.WriteMessage(message);
+        resultMessage = "Actualizado correctamente";
+        Logger.Instance.WriteMessage(resultMessage);
         return Task.FromResult(new UserResponse
         {
             Code = 200,
-            Message = message
+            Message = resultMessage
         });
     }
 }

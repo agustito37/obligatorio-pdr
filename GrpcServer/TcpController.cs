@@ -2,7 +2,10 @@
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using Google.Protobuf;
 using Shared;
+using Shared.domain;
+using GrpcServer.Logs;
 
 public class TcpController
 {
@@ -43,22 +46,28 @@ public class TcpController
     }
 
     private async Task CreateUser(TcpClient client, string data) {
+        string resultMessage = "";
         User user = User.Decoder(data);
 
         List<string> Errors = new List<string>();
 
         if (user.Username == String.Empty)
         {
-            Errors.Add("No puedes dejar vacio el nombre de usuario");
+            resultMessage = "No puedes dejar vacio el nombre de usuario";
+            Logger.Instance.WriteWarning(resultMessage);
+            Errors.Add(resultMessage);
         }
         if (user.Password == String.Empty)
         {
-            Errors.Add("No puedes dejar vacia la contraseña");
+            resultMessage = "No puedes dejar vacia la contraseña";
+            Logger.Instance.WriteWarning(resultMessage);
+            Errors.Add(resultMessage);
         }
         if (Persistence.Instance.GetUsers().Where(x => x.Username == user.Username).ToList().Count > 0)
         {
-            Errors.Add("Ya existe un usuario con ese nombre, por favor ingrese otro");
-
+            resultMessage = "Ya existe un usuario con ese nombre, por favor ingrese otro";
+            Logger.Instance.WriteWarning(resultMessage);
+            Errors.Add(resultMessage);
         }
         if (Errors.Count > 0)
         {
@@ -67,7 +76,9 @@ public class TcpController
         }
         else
         {
-            Console.WriteLine("Insertando usuario: {0}", user.Username);
+            resultMessage = "Insertando usuario: " + user.Username;
+            Logger.Instance.WriteMessage(resultMessage);
+            Console.WriteLine(resultMessage);
             int id = Persistence.Instance.AddUser(user);
 
             await this.service.Response(client, Operations.Ok, Protocol.EncodeString(id.ToString()));
@@ -75,21 +86,28 @@ public class TcpController
     }
 
     private async Task CreateProfile(TcpClient client, string data) {
+        string resultMessage = "";
         Profile profile = Profile.Decoder(data);
 
         List<string> Errors = new List<string>();
 
         if (profile.Description == String.Empty)
         {
-            Errors.Add("No puedes dejar vacia la descripcion del perfil");
+            resultMessage = "No puedes dejar vacia la descripcion del perfil";
+            Logger.Instance.WriteWarning(resultMessage);
+            Errors.Add(resultMessage);
         }
         if (profile.Abilites.Count==0)
         {
-            Errors.Add("No puedes dejar vacia las habilidades del perfil");
+            resultMessage = "No puedes dejar vacia las habilidades del perfil";
+            Logger.Instance.WriteWarning(resultMessage);
+            Errors.Add(resultMessage);
         }
         if (Persistence.Instance.GetProfiles().Where(x => x.UserId == profile.UserId).ToList().Count > 0)
         {
-            Errors.Add("Ya existe un perfil para ese usuario");
+            resultMessage = "Ya existe un perfil para ese usuario";
+            Logger.Instance.WriteWarning(resultMessage);
+            Errors.Add(resultMessage);
         }
         if (Errors.Count > 0)
         {
@@ -97,7 +115,9 @@ public class TcpController
         }
         else
         {
-            Console.WriteLine("Insertando perfil: {0}", profile.Description);
+            resultMessage = "Insertando perfil: " + profile.Description;
+            Logger.Instance.WriteMessage(resultMessage);
+            Console.WriteLine(resultMessage);
             int id = Persistence.Instance.AddProfile(profile);
 
             await this.service.Response(client, Operations.Ok, Protocol.EncodeString(id.ToString()));
@@ -105,11 +125,14 @@ public class TcpController
     }
 
     private async Task AddPhoto(TcpClient client, string idUsuario) {
+        string resultMessage = "";
         Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.UserId == int.Parse(idUsuario));
 
         if (profile == null)
         {
-            await this.service.Response(client, Operations.Error, Protocol.EncodeString("Perfil no existente"));
+            resultMessage = "Perfil no existente";
+            Logger.Instance.WriteWarning(resultMessage);
+            await this.service.Response(client, Operations.Error, Protocol.EncodeString(resultMessage));
             return;
         }
 
@@ -123,7 +146,15 @@ public class TcpController
             path = await this.service.ReceiveFile(client);
         }
         catch (SocketException) {
-            Console.WriteLine("Error al enviar archivo");
+            resultMessage = "Error al enviar archivo";
+            Logger.Instance.WriteError(resultMessage);
+            Console.WriteLine(resultMessage);
+        }
+        catch (Exception ex)
+        {
+            resultMessage = ex.Message;
+            Logger.Instance.WriteError(ex.Message);
+            Console.WriteLine(resultMessage);
         }
 
         Persistence.Instance.SetProfilePhoto(profile.Id, path);
@@ -131,16 +162,21 @@ public class TcpController
 
     private async Task GetPhoto(TcpClient client, string idUsuario)
     {
+        string resultMessage = "";
         Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.UserId == int.Parse(idUsuario));
 
         if (profile == null) {
-           await this.service.Response(client, Operations.Error, Protocol.EncodeString("Perfil no existente"));
+            resultMessage = "Perfil no existente";
+            Logger.Instance.WriteWarning(resultMessage);
+            await this.service.Response(client, Operations.Error, Protocol.EncodeString(resultMessage));
             return;
         }
 
         if (profile.ImagePath == "")
         {
-            await this.service.Response(client, Operations.Error, Protocol.EncodeString("El perfil no contiene imagen"));
+            resultMessage = "El perfil no contiene imagen";
+            Logger.Instance.WriteWarning(resultMessage);
+            await this.service.Response(client, Operations.Error, Protocol.EncodeString(resultMessage));
             return;
         }
 
@@ -154,7 +190,15 @@ public class TcpController
         }
         catch (SocketException)
         {
-            Console.WriteLine("Error al enviar archivo");
+            resultMessage = "Error al enviar archivo";
+            Logger.Instance.WriteError(resultMessage);
+            Console.WriteLine(resultMessage);
+        }
+        catch (Exception ex)
+        {
+            resultMessage = ex.Message;
+            Logger.Instance.WriteError(ex.Message);
+            Console.WriteLine(resultMessage);
         }
     }
 
@@ -166,10 +210,13 @@ public class TcpController
     }
 
     private async Task GetProfile(TcpClient client, string userId) {
+        string resultMessage = "";
         Profile? profile = Persistence.Instance.GetProfiles().Find((p) => p.UserId == int.Parse(userId));
 
         if (profile == null) {
-            await this.service.Response(client, Operations.Error, Protocol.EncodeString("Perfil no existente"));
+            resultMessage = "Perfil no existente";
+            Logger.Instance.WriteWarning(resultMessage);
+            await this.service.Response(client, Operations.Error, Protocol.EncodeString(resultMessage));
             return;
         }
 
@@ -177,34 +224,46 @@ public class TcpController
     }
 
     private async Task SendMessage(TcpClient client, string msg) {
+        string resultMessage = "";
         Message message = Message.Decoder(msg);
 
         User? userFrom = Persistence.Instance.GetUsers().Find((u) => u.Id == message.FromUserId);
         if (userFrom == null)
         {
-            await this.service.Response(client, Operations.Error, Protocol.EncodeString("Usuario origen no existente"));
+            resultMessage = "Usuario origen no existente";
+            Logger.Instance.WriteWarning(resultMessage);
+            await this.service.Response(client, Operations.Error, Protocol.EncodeString(resultMessage));
             return;
         }
 
         User? userTo = Persistence.Instance.GetUsers().Find((u) => u.Id == message.ToUserId);
         if (userTo == null)
         {
-            await this.service.Response(client, Operations.Error, Protocol.EncodeString("Usuario destino no existente"));
+            resultMessage = "Usuario destino no existente";
+            Logger.Instance.WriteWarning(resultMessage);
+            await this.service.Response(client, Operations.Error, Protocol.EncodeString(resultMessage));
             return;
         }
 
         Persistence.Instance.AddMessage(message);
 
+        resultMessage = "Mensaje creado";
+        Logger.Instance.WriteMessage(resultMessage);
         await this.service.Response(client, Operations.Ok, null);
     }
 
     private async Task GetMessages(TcpClient client, string userId) {
+        string resultMessage = "";
         int id = Convert.ToInt32(userId);
         List<Message> messages = Persistence.Instance.GetMessages(id);
 
+        resultMessage = "Mensajes obtenidos";
+        Logger.Instance.WriteMessage(resultMessage);
         await this.service.Response(client, Operations.Ok, Protocol.EncodeList(messages, Message.Encoder));
 
         // after sent, mark received messages as seen
+        resultMessage = "Mensajes leídos";
+        Logger.Instance.WriteMessage(resultMessage);
         List<int> ids = messages.FindAll((m) => m.ToUserId == id).ConvertAll((m) => m.Id);
         Persistence.Instance.SetSeenMessages(ids);
     }

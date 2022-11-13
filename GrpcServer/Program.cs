@@ -1,6 +1,7 @@
 ﻿using GrpcServer.Services;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Shared;
+using GrpcServer.Logs;
 
 internal class GrpcService
 {
@@ -8,16 +9,18 @@ internal class GrpcService
 
     private static void Main(string[] args)
     {
-        new GrpcServer.Logs.Logger();
-        GrpcServer.Logs.Logger.Instance.WriteMessage("Starting server");
+        string message = "Starting server";
+        Logger.Instance.WriteMessage(message);
+        Console.WriteLine(message);
         startTCPServer();
         startGRPCServer(args);
     }
 
     private static void startTCPServer()
     {
-        Console.WriteLine("Iniciando TCP server...");
-        GrpcServer.Logs.Logger.Instance.WriteMessage("Iniciando TCP server...");
+        string message = "Iniciando TCP server";
+        Logger.Instance.WriteMessage(message);
+        Console.WriteLine(message);
 
         string ServerIp = settingsManager.ReadSettings(ServerConfig.ServerIPConfigKey);
         int ServerPort = int.Parse(settingsManager.ReadSettings(ServerConfig.ServerPortConfigKey));
@@ -30,8 +33,9 @@ internal class GrpcService
 
     private static void startGRPCServer(string[] args)
     {
-        Console.WriteLine("Iniciando GRPC server...");
-        GrpcServer.Logs.Logger.Instance.WriteMessage("Iniciando GRPC server...");
+        string message = "Iniciando GRPC server";
+        Logger.Instance.WriteMessage(message);
+        Console.WriteLine(message);
 
         var builder = WebApplication.CreateBuilder(args);
 

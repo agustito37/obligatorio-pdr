@@ -1,30 +1,25 @@
 ﻿using Grpc.Core;
 using GrpcServer;
 using Shared;
+using GrpcServer.Logs;
 
 namespace GrpcServer.Services;
 
 public class ProfilesService : Profiles.ProfilesBase
 {
-    private readonly ILogger<ProfilesService> _logger;
-    public ProfilesService(ILogger<ProfilesService> logger)
-    {
-        _logger = logger;
-    }
-
     public override Task<ProfileResponse> Add(AddProfileRequest request, ServerCallContext context)
     {
-        string message = "";
+        string resultMessage = "";
 
         List <Profile> profiles = Persistence.Instance.GetProfiles();
         Profile? foundProfile = profiles.Find((p) => p.UserId == request.UserId);
         if (foundProfile != null) {
-            message = "El usuario ya tiene un profile asignado";
-            Logs.Logger.Instance.WriteWarning(message);
+            resultMessage = "El usuario ya tiene un profile asignado";
+            Logger.Instance.WriteWarning(resultMessage);
             return Task.FromResult(new ProfileResponse
             {
                 Code = 403,
-                Message = message
+                Message = resultMessage
             });
         }
 
@@ -34,29 +29,29 @@ public class ProfilesService : Profiles.ProfilesBase
             Abilites = request.Abilities.ToList(),
         });
 
-        message = "Agregado correctamente";
-        Logs.Logger.Instance.WriteMessage(message);
+        resultMessage = "Agregado correctamente";
+        Logger.Instance.WriteMessage(resultMessage);
         return Task.FromResult(new ProfileResponse
         {
             Code = 200,
-            Message = message
+            Message = resultMessage
         });
     }
 
     public override Task<ProfileResponse> Update(UpdateProfileRequest request, ServerCallContext context)
     {
-        string message = "";
+        string resultMessage = "";
 
         List<Profile> profiles = Persistence.Instance.GetProfiles();
         Profile? foundProfile = profiles.Find((p) => p.Id == request.Id);
         if (foundProfile == null)
         {
-            message = "El perfil no existe";
-            Logs.Logger.Instance.WriteWarning(message);
+            resultMessage = "El perfil no existe";
+            Logger.Instance.WriteWarning(resultMessage);
             return Task.FromResult(new ProfileResponse
             {
                 Code = 404,
-                Message = message
+                Message = resultMessage
             });
         }
 
@@ -68,29 +63,29 @@ public class ProfilesService : Profiles.ProfilesBase
             Abilites = request.Abilities.ToList(),
         });
 
-        message = "Actualizado correctamente";
-        Logs.Logger.Instance.WriteMessage(message);
+        resultMessage = "Actualizado correctamente";
+        Logger.Instance.WriteMessage(resultMessage);
         return Task.FromResult(new ProfileResponse
         {
             Code = 200,
-            Message = message
+            Message = resultMessage
         });
     }
 
     public override Task<ProfileResponse> Remove(RemoveProfileRequest request, ServerCallContext context)
     {
-        string message = "";
+        string resultMessage = "";
 
         List<Profile> profiles = Persistence.Instance.GetProfiles();
         Profile? foundProfile = profiles.Find((p) => p.Id == request.Id);
         if (foundProfile == null)
         {
-            message = "El perfil no existe";
-            Logs.Logger.Instance.WriteWarning(message);
+            resultMessage = "El perfil no existe";
+            Logger.Instance.WriteWarning(resultMessage);
             return Task.FromResult(new ProfileResponse
             {
                 Code = 404,
-                Message = message
+                Message = resultMessage
             });
         }
 
@@ -102,40 +97,40 @@ public class ProfilesService : Profiles.ProfilesBase
             }
         }
         catch (Exception) {
-            message = "Error al eliminar foto";
-            Logs.Logger.Instance.WriteError(message);
+            resultMessage = "Error al eliminar foto";
+            Logger.Instance.WriteError(resultMessage);
             return Task.FromResult(new ProfileResponse
             {
                 Code = 500,
-                Message = message
+                Message = resultMessage
             });
         }
 
         Persistence.Instance.RemoveProfile(foundProfile);
 
-        message = "Eliminado correctamente";
-        Logs.Logger.Instance.WriteMessage(message);
+        resultMessage = "Eliminado correctamente";
+        Logger.Instance.WriteMessage(resultMessage);
         return Task.FromResult(new ProfileResponse
         {
             Code = 200,
-            Message = message
+            Message = resultMessage
         });
     }
 
     public override Task<ProfileResponse> RemovePhoto(RemoveProfilePhotoRequest request, ServerCallContext context)
     {
-        string message = "";
+        string resultMessage = "";
 
         List<Profile> profiles = Persistence.Instance.GetProfiles();
         Profile? foundProfile = profiles.Find((p) => p.Id == request.Id);
         if (foundProfile == null)
         {
-            message = "El perfil no existe";
-            Logs.Logger.Instance.WriteWarning(message);
+            resultMessage = "El perfil no existe";
+            Logger.Instance.WriteWarning(resultMessage);
             return Task.FromResult(new ProfileResponse
             {
                 Code = 404,
-                Message = message
+                Message = resultMessage
             });
         }
 
@@ -148,23 +143,23 @@ public class ProfilesService : Profiles.ProfilesBase
         }
         catch (Exception)
         {
-            message = "Error al eliminar foto";
-            Logs.Logger.Instance.WriteError(message);
+            resultMessage = "Error al eliminar foto";
+            Logger.Instance.WriteError(resultMessage);
             return Task.FromResult(new ProfileResponse
             {
                 Code = 500,
-                Message = message
+                Message = resultMessage
             });
         }
 
         Persistence.Instance.RemoveProfilePhoto(foundProfile.Id);
 
-        message = "Eliminada correctamente";
-        Logs.Logger.Instance.WriteMessage(message);
+        resultMessage = "Eliminada correctamente";
+        Logger.Instance.WriteMessage(resultMessage);
         return Task.FromResult(new ProfileResponse
         {
             Code = 200,
-            Message = message
+            Message = resultMessage
         });
     }
 }
