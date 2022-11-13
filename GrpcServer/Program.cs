@@ -12,6 +12,7 @@ internal class GrpcService
         string message = "Starting server";
         Logger.Instance.WriteMessage(message);
         Console.WriteLine(message);
+
         startTCPServer();
         startGRPCServer(args);
     }
