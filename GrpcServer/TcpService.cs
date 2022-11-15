@@ -23,51 +23,35 @@ public class TcpService
     public Func<TcpClient, int, string, Task>? RequestHandler { get; set; }
 
     public void Start() {
-        string message = "";
-
         // create listener
-        message = "Creando listener";
-        Logger.Instance.WriteMessage(message);
-        Console.WriteLine(message);
-
+        Logger.Instance.WriteMessage("Creando listener");
         IPEndPoint localEndpoint = new IPEndPoint(IPAddress.Parse(this.ip), this.port);
         this.server = new TcpListener(localEndpoint);
 
         // listen to connections
         this.server.Start(100);
 
-        message = "Esperando conexiones";
-        Logger.Instance.WriteMessage(message);
-        Console.WriteLine(message);
-
+        Logger.Instance.WriteMessage("Esperando conexiones");
         new Task(async () => await this.AcceptConnections()).Start();
     }
 
     private async Task AcceptConnections() {
-        string message = "";
         try
         {
             while (true)
             {
                 TcpClient client = await this.server!.AcceptTcpClientAsync();
-
-                message = "Nueva conexión aceptada";
-                Logger.Instance.WriteMessage(message);
-                Console.WriteLine(message);
-
+                Logger.Instance.WriteMessage("Nueva conexión aceptada");
                 new Task(async () => await this.ManageClient(client)).Start();
             }
         }
         catch (SocketException)
         {
-            message = "Tcp Listener cerrado";
-            Logger.Instance.WriteError(message);
-            Console.WriteLine(message);
+            Logger.Instance.WriteError("Tcp Listener cerrado");
         }
     }
 
     private async Task ManageClient(TcpClient client) {
-        string message = "";
         try
         {
             this.clients.Add(client);
@@ -86,15 +70,12 @@ public class TcpService
         }
         catch (SocketException)
         {
-            message = "Cliente desconectado";
-            Logger.Instance.WriteError(message);
-            Console.WriteLine(message);
+            Logger.Instance.WriteError("Cliente desconectado");
         }
     }
 
     public async Task Response(TcpClient client, int operation, byte[]? responseData)
     {
-        string message = "";
         try
         {
             byte[] sentData = responseData ?? new byte[0];
@@ -107,9 +88,7 @@ public class TcpService
         }
         catch (SocketException)
         {
-            message = "Cliente desconectado";
-            Logger.Instance.WriteError(message);
-            Console.WriteLine("Cliente desconectado");
+            Logger.Instance.WriteError("Cliente desconectado");
         }
     }
 

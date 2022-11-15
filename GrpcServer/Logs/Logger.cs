@@ -50,6 +50,7 @@ namespace GrpcServer.Logs
 
         private void WriteOfType(LogType type, string message)
         {
+            Console.WriteLine("LOG: {0}", message);
             try {
                 byte[] body = Encoding.UTF8.GetBytes(Log.Encoder(new Log() { Type = type, Message = message }));
                 Channel.BasicPublish(exchange: "",

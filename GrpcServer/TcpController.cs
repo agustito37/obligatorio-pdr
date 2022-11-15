@@ -78,7 +78,6 @@ public class TcpController
         {
             resultMessage = "Insertando usuario: " + user.Username;
             Logger.Instance.WriteMessage(resultMessage);
-            Console.WriteLine(resultMessage);
             int id = Persistence.Instance.AddUser(user);
 
             await this.service.Response(client, Operations.Ok, Protocol.EncodeString(id.ToString()));
@@ -115,11 +114,8 @@ public class TcpController
         }
         else
         {
-            resultMessage = "Insertando perfil: " + profile.Description;
-            Logger.Instance.WriteMessage(resultMessage);
-            Console.WriteLine(resultMessage);
+            Logger.Instance.WriteMessage("Insertando perfil: " + profile.Description);
             int id = Persistence.Instance.AddProfile(profile);
-
             await this.service.Response(client, Operations.Ok, Protocol.EncodeString(id.ToString()));
         }
     }
@@ -146,15 +142,11 @@ public class TcpController
             path = await this.service.ReceiveFile(client);
         }
         catch (SocketException) {
-            resultMessage = "Error al enviar archivo";
-            Logger.Instance.WriteError(resultMessage);
-            Console.WriteLine(resultMessage);
+            Logger.Instance.WriteError("Error al enviar archivo");
         }
         catch (Exception ex)
         {
-            resultMessage = ex.Message;
             Logger.Instance.WriteError(ex.Message);
-            Console.WriteLine(resultMessage);
         }
 
         Persistence.Instance.SetProfilePhoto(profile.Id, path);
@@ -190,15 +182,11 @@ public class TcpController
         }
         catch (SocketException)
         {
-            resultMessage = "Error al enviar archivo";
-            Logger.Instance.WriteError(resultMessage);
-            Console.WriteLine(resultMessage);
+            Logger.Instance.WriteError("Error al enviar archivo");
         }
         catch (Exception ex)
         {
-            resultMessage = ex.Message;
             Logger.Instance.WriteError(ex.Message);
-            Console.WriteLine(resultMessage);
         }
     }
 
@@ -247,23 +235,19 @@ public class TcpController
 
         Persistence.Instance.AddMessage(message);
 
-        resultMessage = "Mensaje creado";
-        Logger.Instance.WriteMessage(resultMessage);
+        Logger.Instance.WriteMessage("Mensaje creado");
         await this.service.Response(client, Operations.Ok, null);
     }
 
     private async Task GetMessages(TcpClient client, string userId) {
-        string resultMessage = "";
         int id = Convert.ToInt32(userId);
         List<Message> messages = Persistence.Instance.GetMessages(id);
 
-        resultMessage = "Mensajes obtenidos";
-        Logger.Instance.WriteMessage(resultMessage);
+        Logger.Instance.WriteMessage("Mensajes obtenidos");
         await this.service.Response(client, Operations.Ok, Protocol.EncodeList(messages, Message.Encoder));
 
         // after sent, mark received messages as seen
-        resultMessage = "Mensajes leídos";
-        Logger.Instance.WriteMessage(resultMessage);
+        Logger.Instance.WriteMessage("Mensajes leídos");
         List<int> ids = messages.FindAll((m) => m.ToUserId == id).ConvertAll((m) => m.Id);
         Persistence.Instance.SetSeenMessages(ids);
     }

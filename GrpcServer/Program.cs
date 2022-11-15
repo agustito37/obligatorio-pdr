@@ -11,7 +11,6 @@ internal class GrpcService
     {
         string message = "Starting server";
         Logger.Instance.WriteMessage(message);
-        Console.WriteLine(message);
 
         startTCPServer();
         startGRPCServer(args);
@@ -21,7 +20,6 @@ internal class GrpcService
     {
         string message = "Iniciando TCP server";
         Logger.Instance.WriteMessage(message);
-        Console.WriteLine(message);
 
         string ServerIp = settingsManager.ReadSettings(ServerConfig.ServerIPConfigKey);
         int ServerPort = int.Parse(settingsManager.ReadSettings(ServerConfig.ServerPortConfigKey));
@@ -36,7 +34,6 @@ internal class GrpcService
     {
         string message = "Iniciando GRPC server";
         Logger.Instance.WriteMessage(message);
-        Console.WriteLine(message);
 
         var builder = WebApplication.CreateBuilder(args);
 
