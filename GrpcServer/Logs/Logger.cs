@@ -29,7 +29,7 @@ namespace GrpcServer.Logs
             }
             catch (Exception)
             {
-                Console.WriteLine("Error intentando conectarse a " + host);
+                Console.WriteLine("Error intentando conectarse a {0}", host);
             }
         }
 
