@@ -9,6 +9,7 @@ internal class GrpcService
 
     private static void Main(string[] args)
     {
+        new Logger();
         Logger.Instance.WriteInfo("Starting server");
         startTCPServer();
         startGRPCServer(args);

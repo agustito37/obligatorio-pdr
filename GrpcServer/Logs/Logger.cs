@@ -9,7 +9,7 @@ namespace GrpcServer.Logs
     {
         private static readonly string host = "localhost";
 
-        public static Logger Instance { get; private set; } = new Logger();
+        public static Logger Instance { get; private set; }
 
         private IModel? Channel;
 
@@ -18,6 +18,7 @@ namespace GrpcServer.Logs
             Console.WriteLine("Conectando al servidor de logs");
             try
             {
+                Instance = this;
                 var factory = new ConnectionFactory() { HostName = host };
                 var connection = factory.CreateConnection();
                 Channel = connection.CreateModel();
@@ -50,7 +51,7 @@ namespace GrpcServer.Logs
 
         private void WriteOfType(LogType type, string message)
         {
-            Console.WriteLine("{0}: {1}", type.ToString(), message);
+            Console.WriteLine("{0}: {1}", type.ToString().ToUpper(), message);
             try {
                 byte[] body = Encoding.UTF8.GetBytes(Log.Encoder(new Log() { Type = type, Message = message }));
                 Channel.BasicPublish(exchange: "",

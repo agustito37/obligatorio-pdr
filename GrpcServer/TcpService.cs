@@ -47,7 +47,7 @@ public class TcpService
         }
         catch (SocketException)
         {
-            Logger.Instance.WriteError("Tcp Listener cerrado");
+            Logger.Instance.WriteInfo("Tcp Listener cerrado");
         }
     }
 
@@ -70,7 +70,7 @@ public class TcpService
         }
         catch (SocketException)
         {
-            Logger.Instance.WriteError("Cliente desconectado");
+            Logger.Instance.WriteInfo("Cliente desconectado");
         }
     }
 
@@ -88,7 +88,7 @@ public class TcpService
         }
         catch (SocketException)
         {
-            Logger.Instance.WriteError("Cliente desconectado");
+            Logger.Instance.WriteInfo("Cliente desconectado");
         }
     }
 
