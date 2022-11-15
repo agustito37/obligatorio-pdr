@@ -16,16 +16,19 @@ namespace Logs
                 using (var connection = factory.CreateConnection())
                 using (var channel = connection.CreateModel())
                 {
-                    channel.QueueDeclare(queue: "Logs",
+                    channel.QueueDeclare(
+                        queue: "Logs",
                         durable: false,
                         exclusive: false,
                         autoDelete: false,
-                        arguments: null);
+                        arguments: null
+                    );
 
                     var consumer = new EventingBasicConsumer(channel);
 
                     consumer.Received += (sender, eventArgs) =>
                     {
+                        Console.WriteLine("LOG");
                         var body = eventArgs.Body.ToArray();
 
                         Log message = Log.Decoder(Encoding.UTF8.GetString(body));
@@ -34,9 +37,7 @@ namespace Logs
                         Console.WriteLine(message.Date.ToString() + " - " + message.Type.ToString().ToUpper() + " - " + message.Message);
                     };
 
-                    channel.BasicConsume(queue: "Logs",
-                        autoAck: true,
-                        consumer: consumer);
+                    channel.BasicConsume(queue: "Logs", autoAck: true, consumer: consumer);
 
                     Console.WriteLine("Listening to messages at: {0}", host);
                 }

@@ -22,11 +22,13 @@ namespace GrpcServer.Logs
                 var factory = new ConnectionFactory() { HostName = host };
                 var connection = factory.CreateConnection();
                 Channel = connection.CreateModel();
-                Channel.QueueDeclare(queue: "Logs",
-                        durable: false,
-                        exclusive: false,
-                        autoDelete: false,
-                        arguments: null);
+                Channel.QueueDeclare(
+                    queue: "Logs",
+                    durable: false,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null
+                );
             }
             catch (Exception)
             {
@@ -54,10 +56,12 @@ namespace GrpcServer.Logs
             Console.WriteLine("{0}: {1}", type.ToString().ToUpper(), message);
             try {
                 byte[] body = Encoding.UTF8.GetBytes(Log.Encoder(new Log() { Type = type, Message = message }));
-                Channel.BasicPublish(exchange: "",
-                                routingKey: "Logs",
-                                basicProperties: null,
-                                body: body);
+                Channel.BasicPublish(
+                    exchange: "",
+                    routingKey: "Logs",
+                    basicProperties: null,
+                    body: body
+                 );
             } catch (Exception ex) {
                 Console.WriteLine(ex.Message);
             }
