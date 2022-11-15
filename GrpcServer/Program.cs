@@ -9,18 +9,14 @@ internal class GrpcService
 
     private static void Main(string[] args)
     {
-        string message = "Starting server";
-        Logger.Instance.WriteMessage(message);
-
+        Logger.Instance.WriteInfo("Starting server");
         startTCPServer();
         startGRPCServer(args);
     }
 
     private static void startTCPServer()
     {
-        string message = "Iniciando TCP server";
-        Logger.Instance.WriteMessage(message);
-
+        Logger.Instance.WriteInfo("Iniciando TCP server");
         string ServerIp = settingsManager.ReadSettings(ServerConfig.ServerIPConfigKey);
         int ServerPort = int.Parse(settingsManager.ReadSettings(ServerConfig.ServerPortConfigKey));
         TcpService service = new TcpService(ServerIp, ServerPort);
@@ -32,9 +28,7 @@ internal class GrpcService
 
     private static void startGRPCServer(string[] args)
     {
-        string message = "Iniciando GRPC server";
-        Logger.Instance.WriteMessage(message);
-
+        Logger.Instance.WriteInfo("Iniciando GRPC server");
         var builder = WebApplication.CreateBuilder(args);
 
         // Additional configuration is required to successfully run gRPC on macOS.

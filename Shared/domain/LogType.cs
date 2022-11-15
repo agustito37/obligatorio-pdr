@@ -10,6 +10,6 @@ namespace Shared.domain
     {
         Error = 1,
         Warning = 2,
-        Message = 3
+        Info = 3
     }
 }

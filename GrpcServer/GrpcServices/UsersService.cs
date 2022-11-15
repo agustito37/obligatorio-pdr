@@ -32,7 +32,7 @@ public class UsersService : Users.UsersBase
         });
 
         resultMessage = "Agregado correctamente";
-        Logger.Instance.WriteMessage(resultMessage);
+        Logger.Instance.WriteInfo(resultMessage);
         return Task.FromResult(new UserResponse
         {
             Code = 1,
@@ -65,7 +65,7 @@ public class UsersService : Users.UsersBase
         });
 
         resultMessage = "Actualizado correctamente";
-        Logger.Instance.WriteMessage(resultMessage);
+        Logger.Instance.WriteInfo(resultMessage);
         return Task.FromResult(new UserResponse
         {
             Code = 200,
@@ -118,7 +118,7 @@ public class UsersService : Users.UsersBase
         Persistence.Instance.RemoveUser(foundUser);
 
         resultMessage = "Actualizado correctamente";
-        Logger.Instance.WriteMessage(resultMessage);
+        Logger.Instance.WriteInfo(resultMessage);
         return Task.FromResult(new UserResponse
         {
             Code = 200,

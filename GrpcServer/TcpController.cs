@@ -77,7 +77,7 @@ public class TcpController
         else
         {
             resultMessage = "Insertando usuario: " + user.Username;
-            Logger.Instance.WriteMessage(resultMessage);
+            Logger.Instance.WriteInfo(resultMessage);
             int id = Persistence.Instance.AddUser(user);
 
             await this.service.Response(client, Operations.Ok, Protocol.EncodeString(id.ToString()));
@@ -114,7 +114,7 @@ public class TcpController
         }
         else
         {
-            Logger.Instance.WriteMessage("Insertando perfil: " + profile.Description);
+            Logger.Instance.WriteInfo("Insertando perfil: " + profile.Description);
             int id = Persistence.Instance.AddProfile(profile);
             await this.service.Response(client, Operations.Ok, Protocol.EncodeString(id.ToString()));
         }
@@ -235,7 +235,7 @@ public class TcpController
 
         Persistence.Instance.AddMessage(message);
 
-        Logger.Instance.WriteMessage("Mensaje creado");
+        Logger.Instance.WriteInfo("Mensaje creado");
         await this.service.Response(client, Operations.Ok, null);
     }
 
@@ -243,11 +243,11 @@ public class TcpController
         int id = Convert.ToInt32(userId);
         List<Message> messages = Persistence.Instance.GetMessages(id);
 
-        Logger.Instance.WriteMessage("Mensajes obtenidos");
+        Logger.Instance.WriteInfo("Mensajes obtenidos");
         await this.service.Response(client, Operations.Ok, Protocol.EncodeList(messages, Message.Encoder));
 
         // after sent, mark received messages as seen
-        Logger.Instance.WriteMessage("Mensajes leídos");
+        Logger.Instance.WriteInfo("Mensajes leídos");
         List<int> ids = messages.FindAll((m) => m.ToUserId == id).ConvertAll((m) => m.Id);
         Persistence.Instance.SetSeenMessages(ids);
     }

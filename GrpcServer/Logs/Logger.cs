@@ -43,14 +43,14 @@ namespace GrpcServer.Logs
             this.WriteOfType(LogType.Warning, message);
         }
 
-        public void WriteMessage(string message)
+        public void WriteInfo(string message)
         {
-            this.WriteOfType(LogType.Message, message);
+            this.WriteOfType(LogType.Info, message);
         }
 
         private void WriteOfType(LogType type, string message)
         {
-            Console.WriteLine("LOG: {0}", message);
+            Console.WriteLine("{0}: {1}", type.ToString(), message);
             try {
                 byte[] body = Encoding.UTF8.GetBytes(Log.Encoder(new Log() { Type = type, Message = message }));
                 Channel.BasicPublish(exchange: "",

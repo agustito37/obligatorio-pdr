@@ -38,12 +38,12 @@ namespace Logs
                         autoAck: true,
                         consumer: consumer);
 
-                    Console.WriteLine("Listening to messages at: " + host);
+                    Console.WriteLine("Listening to messages at: {0}", host);
                 }
             }
             catch (Exception)
             {
-                Console.WriteLine("Was not able to RabbitMQ: " + host);
+                Console.WriteLine("Was not able to RabbitMQ: {0}", host);
             }
         }
     }

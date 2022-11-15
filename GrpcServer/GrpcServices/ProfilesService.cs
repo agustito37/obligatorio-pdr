@@ -30,7 +30,7 @@ public class ProfilesService : Profiles.ProfilesBase
         });
 
         resultMessage = "Agregado correctamente";
-        Logger.Instance.WriteMessage(resultMessage);
+        Logger.Instance.WriteInfo(resultMessage);
         return Task.FromResult(new ProfileResponse
         {
             Code = 200,
@@ -64,7 +64,7 @@ public class ProfilesService : Profiles.ProfilesBase
         });
 
         resultMessage = "Actualizado correctamente";
-        Logger.Instance.WriteMessage(resultMessage);
+        Logger.Instance.WriteInfo(resultMessage);
         return Task.FromResult(new ProfileResponse
         {
             Code = 200,
@@ -109,7 +109,7 @@ public class ProfilesService : Profiles.ProfilesBase
         Persistence.Instance.RemoveProfile(foundProfile);
 
         resultMessage = "Eliminado correctamente";
-        Logger.Instance.WriteMessage(resultMessage);
+        Logger.Instance.WriteInfo(resultMessage);
         return Task.FromResult(new ProfileResponse
         {
             Code = 200,
@@ -155,7 +155,7 @@ public class ProfilesService : Profiles.ProfilesBase
         Persistence.Instance.RemoveProfilePhoto(foundProfile.Id);
 
         resultMessage = "Eliminada correctamente";
-        Logger.Instance.WriteMessage(resultMessage);
+        Logger.Instance.WriteInfo(resultMessage);
         return Task.FromResult(new ProfileResponse
         {
             Code = 200,

@@ -24,14 +24,14 @@ public class TcpService
 
     public void Start() {
         // create listener
-        Logger.Instance.WriteMessage("Creando listener");
+        Logger.Instance.WriteInfo("Creando listener");
         IPEndPoint localEndpoint = new IPEndPoint(IPAddress.Parse(this.ip), this.port);
         this.server = new TcpListener(localEndpoint);
 
         // listen to connections
         this.server.Start(100);
 
-        Logger.Instance.WriteMessage("Esperando conexiones");
+        Logger.Instance.WriteInfo("Esperando conexiones");
         new Task(async () => await this.AcceptConnections()).Start();
     }
 
@@ -41,7 +41,7 @@ public class TcpService
             while (true)
             {
                 TcpClient client = await this.server!.AcceptTcpClientAsync();
-                Logger.Instance.WriteMessage("Nueva conexión aceptada");
+                Logger.Instance.WriteInfo("Nueva conexión aceptada");
                 new Task(async () => await this.ManageClient(client)).Start();
             }
         }
