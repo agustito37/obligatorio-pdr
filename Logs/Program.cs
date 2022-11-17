@@ -1,6 +1,6 @@
 ﻿using Logs;
 
-new QueueServer("localhost");
+new QueueService("localhost");
 
 var builder = WebApplication.CreateBuilder(args);
 
