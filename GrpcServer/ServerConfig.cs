@@ -10,5 +10,6 @@ namespace Server
     {
         public static string ServerIPConfigKey = "ServerIpAddress";
         public static string ServerPortConfigKey = "ServerPort";
+        public static string GrpcURL = "GrpcURL"; //No se si no la tienen declarada en otro lado
     }
 }
