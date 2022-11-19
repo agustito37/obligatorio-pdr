@@ -1,6 +1,9 @@
 ﻿using Logs;
+using Shared;
 
-new QueueService("localhost");
+SettingsManager settingsManager = new SettingsManager();
+
+new QueueService(settingsManager.ReadSettings(ServerConfig.LogServerURL));
 
 var builder = WebApplication.CreateBuilder(args);
 

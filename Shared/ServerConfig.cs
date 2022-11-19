@@ -12,4 +12,5 @@ public static class ServerConfig
     public static string ServerIPConfigKey = "ServerIpAddress";
     public static string ServerPortConfigKey = "ServerPort";
     public static string grpcUrl;
+    public static string LogServerURL = "LogServerURL";
 }

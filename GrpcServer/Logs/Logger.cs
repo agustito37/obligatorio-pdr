@@ -7,14 +7,14 @@ namespace GrpcServer.Logs
 {
     public class Logger
     {
-        private static readonly string host = "localhost";
-
         public static Logger Instance { get; private set; }
 
         private IModel? Channel;
+        private string host;
 
-        public Logger()
+        public Logger(string Host)
         {
+            this.host = Host;
             Console.WriteLine("Conectando al servidor de logs");
             try
             {
@@ -54,7 +54,8 @@ namespace GrpcServer.Logs
         private void WriteOfType(LogType type, string message)
         {
             Console.WriteLine("{0}: {1}", type.ToString().ToUpper(), message);
-            try {
+            try
+            {
                 byte[] body = Encoding.UTF8.GetBytes(Log.Encoder(new Log() { Type = type, Message = message }));
                 Channel.BasicPublish(
                     exchange: "",
@@ -62,7 +63,9 @@ namespace GrpcServer.Logs
                     basicProperties: null,
                     body: body
                  );
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Console.WriteLine(ex.Message);
             }
         }
