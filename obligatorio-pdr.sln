@@ -15,10 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logs", "Logs\Logs.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrpcServer", "GrpcServer\GrpcServer.csproj", "{D69EE62F-A76B-4B0C-95C7-E964B5EC98A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogsWebApi", "LogsWebApi\LogsWebApi.csproj", "{A9AF8850-2EF6-45CD-B382-C20009070013}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdministrationWebApi", "AdministrationWebApi\AdministrationWebApi.csproj", "{D0360296-77A1-48DF-8D7A-16558719644C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,14 +41,6 @@ Global
 		{D69EE62F-A76B-4B0C-95C7-E964B5EC98A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D69EE62F-A76B-4B0C-95C7-E964B5EC98A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D69EE62F-A76B-4B0C-95C7-E964B5EC98A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9AF8850-2EF6-45CD-B382-C20009070013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9AF8850-2EF6-45CD-B382-C20009070013}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9AF8850-2EF6-45CD-B382-C20009070013}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9AF8850-2EF6-45CD-B382-C20009070013}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0360296-77A1-48DF-8D7A-16558719644C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0360296-77A1-48DF-8D7A-16558719644C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0360296-77A1-48DF-8D7A-16558719644C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0360296-77A1-48DF-8D7A-16558719644C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

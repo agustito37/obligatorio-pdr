@@ -23,13 +23,13 @@ public class ProfilesService : Profiles.ProfilesBase
             });
         }
 
-        Persistence.Instance.AddProfile(new Profile {
+        int id = Persistence.Instance.AddProfile(new Profile {
             UserId = request.UserId,
             Description = request.Description,
             Abilites = request.Abilities.ToList(),
         });
 
-        resultMessage = "Agregado correctamente";
+        resultMessage = "Agregado correctamente id:" + id;
         Logger.Instance.WriteInfo(resultMessage);
         return Task.FromResult(new ProfileResponse
         {
@@ -61,7 +61,7 @@ public class ProfilesService : Profiles.ProfilesBase
             UserId = request.UserId,
             Description = request.Description,
             Abilites = request.Abilities.ToList(),
-        });
+        }); ;
 
         resultMessage = "Actualizado correctamente";
         Logger.Instance.WriteInfo(resultMessage);

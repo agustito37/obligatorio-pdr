@@ -25,13 +25,13 @@ public class UsersService : Users.UsersBase
             });
         }
 
-        Persistence.Instance.AddUser(new User
+        int id = Persistence.Instance.AddUser(new User
         {
             Username = request.Username,
             Password = request.Password
         });
 
-        resultMessage = "Agregado correctamente";
+        resultMessage = "Agregado correctamente id: " + id;
         Logger.Instance.WriteInfo(resultMessage);
         return Task.FromResult(new UserResponse
         {

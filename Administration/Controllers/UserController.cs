@@ -1,17 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Shared;
-using GrpcServer;
-using GrpcServer.Services;
 using Grpc.Net.Client;
 using Administration;
 
 namespace AdministrationWebApi.Controllers
 {
     [ApiController]
-    [Route("[users]")]
+    [Route("api/v1/[controller]")]
     public class UserController : ControllerBase
     {
-        private Administration.Users.UsersClient client;
+        private Administration.Users.UsersClient? client;
 
         private string grpcUrl;
         static readonly SettingsManager settingsMgr = new SettingsManager();
@@ -19,33 +17,33 @@ namespace AdministrationWebApi.Controllers
         public UserController()
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-            grpcUrl = settingsMgr.ReadSettings(ServerConfig.grpcUrl);
+            grpcUrl = settingsMgr.ReadSettings(ServerConfig.GrpcAddress);
         }
 
-        [HttpPost("users")]
-        public async Task<ActionResult> PostUser([FromBody] AddUserRequest userToAdd)
+        [HttpPost()]
+        public async Task<ActionResult> Add([FromBody] AddUserRequest userToAdd)
         {
             using var channel = GrpcChannel.ForAddress(grpcUrl);
             client = new Administration.Users.UsersClient(channel);
             var reply = await client.AddAsync(userToAdd);
-            return Ok(reply.Message);
+            return StatusCode(reply.Code, reply.Message);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateProfile([FromRoute] int id, [FromBody] UpdateUserRequest userToUpdate)
+        public async Task<ActionResult> Update([FromRoute] int id, [FromBody] UpdateUserRequest userToUpdate)
         {
             using var channel = GrpcChannel.ForAddress(grpcUrl);
             client = new Administration.Users.UsersClient(channel);
-            var reply = await client.Update(userToUpdate);
-            return Ok(reply.Message);
+            var reply = await client.UpdateAsync(userToUpdate);
+            return StatusCode(reply.Code, reply.Message);
         }
-        [HttpDelete("users/{id}")]
-        public async Task<ActionResult> DeleteProfile([FromBody] RemoveUserRequest userToDelete)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete([FromBody] RemoveUserRequest userToDelete)
         {
             using var channel = GrpcChannel.ForAddress(grpcUrl);
             client = new Administration.Users.UsersClient(channel);
             var reply = await client.RemoveAsync(userToDelete);
-            return Ok(reply.Message);
+            return StatusCode(reply.Code, reply.Message);
         }
     }      
 }

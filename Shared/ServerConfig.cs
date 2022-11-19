@@ -11,6 +11,6 @@ public static class ServerConfig
     public static string ClientIPConfigKey = "ClientIpAddress";
     public static string ServerIPConfigKey = "ServerIpAddress";
     public static string ServerPortConfigKey = "ServerPort";
-    public static string grpcUrl;
     public static string LogServerURL = "LogServerURL";
+    public static string GrpcAddress = "GrpcAddress";
 }

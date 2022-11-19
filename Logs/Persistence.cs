@@ -12,7 +12,7 @@ public sealed class Persistence
     {
     }
 
-    public List<Log> GetUsers()
+    public List<Log> GetLogs()
     {
         lock (this.logs)
         {
@@ -20,6 +20,7 @@ public sealed class Persistence
             return this.logs.ConvertAll(log => new Log
             {
                 Date = log.Date,
+                Type = log.Type,
                 Message = log.Message
             });
         }
