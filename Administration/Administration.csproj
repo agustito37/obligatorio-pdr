@@ -6,6 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.9" />
@@ -42,20 +45,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Properties\App.config" />
+    <Content Remove="Properties\appsettings.Development.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\App.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Condition="'$(ExcludeConfigFilesFromBuildOutput)'!='true'" Update="Properties\appsettings.json">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Condition="'$(ExcludeConfigFilesFromBuildOutput)'!='true'" Update="Properties\appsettings.Development.json">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
-﻿using Administration;
+﻿using System.Configuration;
+using Administration;
 using Grpc.Net.Client;
 
 class Administrator {
@@ -14,12 +15,8 @@ class Administrator {
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
         app.UseHttpsRedirection();
 
