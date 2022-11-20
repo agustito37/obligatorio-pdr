@@ -1,9 +1,14 @@
-﻿using System.Configuration;
-using Administration;
-using Grpc.Net.Client;
+﻿using Logs;
+using Shared;
 
-class Administrator {
-    static async Task Main(string[] args) {
+class LogsApp
+{
+    static async Task Main(string[] args)
+    {
+        SettingsManager settingsManager = new SettingsManager();
+
+        new QueueService(settingsManager.ReadSettings(ServerConfig.LogServerURL));
+
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
