@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Administration", "Administr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logs", "Logs\Logs.csproj", "{1F602915-9CCB-493D-8C2C-CE5503E247D7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrpcServer", "GrpcServer\GrpcServer.csproj", "{D69EE62F-A76B-4B0C-95C7-E964B5EC98A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Servers", "Servers\Servers.csproj", "{D69EE62F-A76B-4B0C-95C7-E964B5EC98A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

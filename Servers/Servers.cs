@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Shared;
 using GrpcServer.Logs;
 
-internal class GrpcService
+internal class Servers
 {
     private static readonly SettingsManager settingsManager = new SettingsManager();
 

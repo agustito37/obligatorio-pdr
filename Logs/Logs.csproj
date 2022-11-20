@@ -7,15 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="App.config" />
+    <Content Remove="Properties\App.config" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Controllers\" />
     <None Remove="Properties\" />
+    <None Remove="MQ\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
+    <None Include="Properties\App.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -34,5 +35,6 @@
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="Properties\" />
+    <Folder Include="MQ\" />
   </ItemGroup>
 </Project>

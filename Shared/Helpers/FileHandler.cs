@@ -39,7 +39,8 @@ public static class FileHandler
         {
             File.Delete(path);
         }
-
-        throw new Exception("File does not exist");
+        else {
+            throw new Exception("File does not exist");
+        }
     }
 }

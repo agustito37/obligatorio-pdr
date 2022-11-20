@@ -91,7 +91,7 @@ public class UsersService : Users.UsersBase
         }
 
         List<Profile> profiles = Persistence.Instance.GetProfiles();
-        Profile? foundProfile = profiles.Find((p) => p.Id == request.Id);
+        Profile? foundProfile = profiles.Find((p) => p.UserId == request.Id);
         if (foundProfile != null)
         {
             try
@@ -117,7 +117,7 @@ public class UsersService : Users.UsersBase
 
         Persistence.Instance.RemoveUser(foundUser);
 
-        resultMessage = "Actualizado correctamente";
+        resultMessage = "Eliminado correctamente";
         Logger.Instance.WriteInfo(resultMessage);
         return Task.FromResult(new UserResponse
         {

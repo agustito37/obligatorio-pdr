@@ -4,37 +4,22 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>GrpcServer</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'GrpcServer' " />
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.9" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-    <PackageReference Include="Google.Protobuf" Version="3.21.9" />
-    <PackageReference Include="Grpc.Net.Client" Version="2.49.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.50.0">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <Protobuf Include="GRPC\Protos\profiles.proto" GrpcServices="Server" />
+    <Protobuf Include="GRPC\Protos\users.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Google.Protobuf" />
-    <None Remove="Grpc.Net.Client" />
-    <None Remove="Grpc.Tools" />
-    <None Remove="GRPC\" />
-    <None Remove="GRPC\Protos\profiles.proto" />
-    <None Remove="GRPC\Protos\users.proto" />
-    <None Remove="GRPC\Protos\" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.40.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.9" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="GRPC\" />
-    <Folder Include="GRPC\Protos\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Protobuf Include="GRPC\Protos\profiles.proto" GrpcServices="Client" />
-    <Protobuf Include="GRPC\Protos\users.proto" GrpcServices="Client" />
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
@@ -44,14 +29,31 @@
     <Content Remove="Properties\App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Protos\user.proto" />
+    <None Remove="Grpc.Tools" />
+    <None Remove="GRPC\" />
+    <None Remove="GRPC\GrpcServices\" />
+    <None Remove="TCP\" />
+    <None Remove="GRPC\Protos\profiles.proto" />
+    <None Remove="GRPC\Protos\users.proto" />
+    <None Remove="GRPC\Protos\" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Properties\App.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="GRPC\" />
+    <Folder Include="GRPC\GrpcServices\" />
+    <Folder Include="TCP\" />
+    <Folder Include="GRPC\Protos\" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Condition="'$(ExcludeConfigFilesFromBuildOutput)'!='true'" Update="Properties\appsettings.json">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Condition="'$(ExcludeConfigFilesFromBuildOutput)'!='true'" Update="Properties\appsettings.Development.json">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
