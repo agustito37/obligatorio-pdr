@@ -17,9 +17,13 @@ namespace AdministrationWebApi.Controllers
         }
 
         [HttpGet()]
-        public ActionResult GetFiltered(int type)
+        public ActionResult GetFiltered([FromQuery] int? type, [FromQuery] string? term, [FromQuery] string? date)
         {
-            List<Log> logs = Persistence.Instance.GetLogs().FindAll((l) => type == 0 || l.Type == (LogType)type);
+            List<Log> logs = Persistence.Instance.GetLogs().FindAll((l) =>
+                (type == null || l.Type == (LogType)type)
+                && (term == null || l.Message.Contains(term))
+                && (date == null || l.Date.ToShortDateString() == date)
+            );
             return StatusCode(200, logs);
         }
     }      
