@@ -22,7 +22,7 @@ namespace AdministrationWebApi.Controllers
             List<Log> logs = Persistence.Instance.GetLogs().FindAll((l) =>
                 (type == null || l.Type == (LogType)type)
                 && (term == null || l.Message.Contains(term))
-                && (date == null || l.Date.ToShortDateString() == date)
+                && (date == null || l.Date.ToShortDateString() == date) // format: 21/11/2022
             );
             return StatusCode(200, logs);
         }
