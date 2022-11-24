@@ -140,6 +140,8 @@ public class TcpController
         {
             // receive file stream
             path = await this.service.ReceiveFile(client);
+            resultMessage = "Imagen enviada";
+            Logger.Instance.WriteInfo(resultMessage);
         }
         catch (SocketException) {
             Logger.Instance.WriteError("Error al enviar archivo");
@@ -179,6 +181,8 @@ public class TcpController
         {
             // send file stream
             await this.service.SendFile(client, profile.ImagePath);
+            resultMessage = "Imagen obtenida";
+            Logger.Instance.WriteInfo(resultMessage);
         }
         catch (SocketException)
         {
@@ -194,6 +198,7 @@ public class TcpController
         (string key, string value) filter = Protocol.getParam(query);
         List<Profile> profiles = Persistence.Instance.GetProfiles(filter.key, filter.value);
 
+        Logger.Instance.WriteInfo("Perfiles obtenidos");
         await this.service.Response(client, Operations.Ok, Protocol.EncodeList(profiles, Profile.Encoder));
     }
 
@@ -208,6 +213,8 @@ public class TcpController
             return;
         }
 
+        resultMessage = "Perfil obtenido";
+        Logger.Instance.WriteInfo(resultMessage);
         await this.service.Response(client, Operations.Ok, Protocol.Encode(profile, Profile.Encoder));
     }
 
